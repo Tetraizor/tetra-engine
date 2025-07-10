@@ -1,8 +1,11 @@
-#include "core.h"
-#include "platform/window_manager.h"
+#include "Core.h"
+#include <SDL3/SDL.h>
+#include <iostream>
+#include <algorithm>
 
 namespace Engine
 {
+
     Core::Core() = default;
 
     Core::~Core()
@@ -12,15 +15,9 @@ namespace Engine
 
     bool Core::initialize()
     {
-        windowManager = std::make_unique<WindowManager>();
-        if (!windowManager->initialize())
+        if (!SDL_Init(SDL_INIT_VIDEO))
         {
-            return false;
-        }
-
-        mainWindowId = windowManager->createWindow("TetraEngine", 1280, 720);
-        if (!mainWindowId)
-        {
+            std::cerr << "SDL_Init failed: " << SDL_GetError() << "\n";
             return false;
         }
 
@@ -31,51 +28,57 @@ namespace Engine
     void Core::run()
     {
         SDL_Event event;
+
         while (running)
         {
-            while (windowManager->pollEvent(event))
+            while (SDL_PollEvent(&event))
             {
                 if (event.type == SDL_EVENT_QUIT)
+                {
                     running = false;
-
-                // Pass event to input module
+                }
             }
 
-            update();
-            render();
+            float deltaTime = 0.016f;
+
+            for (auto &stage : stages)
+            {
+                stage->update(deltaTime);
+            }
+
+            for (auto &stage : stages)
+            {
+                stage->render();
+            }
+
+            SDL_Delay(16);
         }
     }
 
     void Core::shutdown()
     {
-        if (windowManager)
-        {
-            windowManager->shutdown();
-            windowManager = nullptr;
-        }
+        if (!running)
+            return;
 
+        stages.clear();
+
+        SDL_Quit();
         running = false;
     }
 
-    void Core::update()
+    std::shared_ptr<Stage> Core::createStage(bool headless)
     {
+        auto stage = std::make_shared<Stage>(headless);
+        stages.push_back(stage);
+        return stage;
     }
 
-    void Core::render()
+    void Core::destroyStage(std::shared_ptr<Stage> stage)
     {
-        if (!mainWindowId.has_value())
-            return;
-
-        auto *mainWindow = windowManager->getWindow(*mainWindowId);
-        if (!mainWindow || mainWindow->isHeadless())
-            return;
-
-        SDL_Renderer *renderer = mainWindow->getSDLRenderer();
-        SDL_SetRenderDrawColor(renderer, 20, 20, 30, 255);
-        SDL_RenderClear(renderer);
-
-        // Draw scene elements
-
-        SDL_RenderPresent(renderer);
+        auto it = std::find(stages.begin(), stages.end(), stage);
+        if (it != stages.end())
+        {
+            stages.erase(it);
+        }
     }
 }

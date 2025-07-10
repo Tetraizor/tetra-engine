@@ -5,7 +5,7 @@ file(GLOB_RECURSE ENGINE_SRC CONFIGURE_DEPENDS
 add_library(TetraEngine STATIC ${ENGINE_SRC})
 
 target_include_directories(TetraEngine PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
 target_link_libraries(TetraEngine PRIVATE SDL3::SDL3)
