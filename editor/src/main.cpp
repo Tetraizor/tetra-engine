@@ -1,13 +1,16 @@
-#include "engine/core.h"
+#include "core.h"
 
 int main()
 {
     Engine::Core core;
 
-    core.initialize();
+    if (!core.initialize())
+    {
+        return -1;
+    }
 
-    while (true)
-        ;
+    core.run();
+    core.shutdown();
 
     return 0;
 }

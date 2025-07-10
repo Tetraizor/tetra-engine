@@ -1,17 +1,21 @@
-project(TetraEngine)
-
-add_library(${PROJECT_NAME} SHARED
-    src/core.cpp
+file(GLOB_RECURSE ENGINE_SRC CONFIGURE_DEPENDS
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
 )
 
-target_include_directories(${PROJECT_NAME} PUBLIC
+add_library(TetraEngine STATIC ${ENGINE_SRC})
+
+target_include_directories(TetraEngine PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
-# Use the platform-aware DIST_DIR from the root CMakeLists.txt
-set_target_properties(${PROJECT_NAME} PROPERTIES
-    OUTPUT_NAME "TetraEngine"
-    RUNTIME_OUTPUT_DIRECTORY ${DIST_DIR}/bin
-    LIBRARY_OUTPUT_DIRECTORY ${DIST_DIR}/lib
-    ARCHIVE_OUTPUT_DIRECTORY ${DIST_DIR}/lib
-)
+target_link_libraries(TetraEngine PRIVATE SDL3::SDL3)
+
+foreach(CONFIG_TYPE IN ITEMS Debug Release RelWithDebInfo MinSizeRel)
+  string(TOUPPER ${CONFIG_TYPE} CONFIG_TYPE_UPPER)
+  set_target_properties(TetraEngine PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY_${CONFIG_TYPE_UPPER} ${DIST_DIR} 
+    LIBRARY_OUTPUT_DIRECTORY_${CONFIG_TYPE_UPPER} ${DIST_DIR} 
+    ARCHIVE_OUTPUT_DIRECTORY_${CONFIG_TYPE_UPPER} ${DIST_DIR} 
+    PDB_OUTPUT_DIRECTORY_${CONFIG_TYPE_UPPER}     ${DIST_DIR} 
+  )
+endforeach()
