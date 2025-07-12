@@ -22,7 +22,7 @@ int main()
         std::cerr << "Failed to initialize viewport!" << std::endl;
     }
 
-    stage->attachViewport(viewport);
+    stage->attach_viewport(viewport);
 
     core.run();
     core.shutdown();

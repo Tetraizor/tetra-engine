@@ -1,6 +1,8 @@
 #pragma once
 
 #include <memory>
+#include "viewport/viewport.h"
+#include "entity/entity_manager.h"
 
 namespace Engine
 {
@@ -12,16 +14,21 @@ namespace Engine
         explicit Stage(bool headless = false);
         ~Stage();
 
-        void update(float deltaTime);
+        void setup();
         void render();
+        void update(float deltaTime);
 
-        void attachViewport(std::shared_ptr<Viewport> viewport);
-        void detachViewport();
+        void attach_viewport(std::shared_ptr<Viewport> viewport);
+        void detach_viewport();
 
-        bool isHeadless() const;
+        bool is_headless() const;
+
+        EntityManager &get_entity_manager();
 
     private:
         bool headless;
         std::shared_ptr<Viewport> viewport;
+
+        EntityManager entity_manager;
     };
 }

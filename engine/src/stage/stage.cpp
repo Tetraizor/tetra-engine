@@ -1,19 +1,21 @@
 #include "stage.h"
 #include "viewport/viewport.h"
+#include "entity/entity.h"
+#include "component/component.h"
 
 namespace Engine
 {
     Stage::Stage(bool headless) : headless(headless) {}
     Stage::~Stage() = default;
 
-    void Stage::update(float deltaTime)
+    void Stage::setup()
     {
-        // TODO: Update scene logic
+        entity_manager.setup();
     }
 
     void Stage::render()
     {
-        if (isHeadless())
+        if (is_headless())
             return;
 
         viewport->beginFrame();
@@ -23,20 +25,30 @@ namespace Engine
         viewport->endFrame();
     }
 
-    void Stage::attachViewport(std::shared_ptr<Viewport> vp)
+    void Stage::update(float delta_time)
+    {
+        entity_manager.update(delta_time);
+    }
+
+    void Stage::attach_viewport(std::shared_ptr<Viewport> vp)
     {
         viewport = std::move(vp);
         headless = false;
     }
 
-    void Stage::detachViewport()
+    void Stage::detach_viewport()
     {
         viewport.reset();
         headless = true;
     }
 
-    bool Stage::isHeadless() const
+    bool Stage::is_headless() const
     {
         return headless || !viewport;
+    }
+
+    EntityManager &Stage::get_entity_manager()
+    {
+        return entity_manager;
     }
 }

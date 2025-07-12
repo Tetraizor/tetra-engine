@@ -13,11 +13,7 @@ namespace Engine
 
     bool Viewport::initialize()
     {
-        window = SDL_CreateWindow(title.c_str(),
-                                  width,
-                                  height,
-                                  0);
-
+        window = SDL_CreateWindow(title.c_str(), width, height, 0);
         if (!window)
         {
             std::cerr << "Failed to create SDL Window: " << SDL_GetError() << "\n";
@@ -25,7 +21,7 @@ namespace Engine
         }
 
         renderer = SDL_CreateRenderer(window, nullptr);
-        if (renderer)
+        if (!renderer)
         {
             std::cerr << "Failed to create SDL Renderer: " << SDL_GetError() << "\n";
             return false;

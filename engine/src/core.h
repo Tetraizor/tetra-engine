@@ -2,7 +2,7 @@
 
 #include <memory>
 #include <vector>
-#include "stage/Stage.h"
+#include "stage/stage.h"
 
 namespace Engine
 {
