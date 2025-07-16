@@ -1,6 +1,8 @@
 #pragma once
 
 #include "entity/entity_id.h"
+#include "serialization/serialization_context.h"
+#include "serialization/serializable.h"
 
 #include <string>
 #include <memory>
@@ -12,7 +14,7 @@ namespace Engine
     class Component;
     class EntityManager;
 
-    class Entity
+    class Entity : public Serializable
     {
         friend class EntityManager;
 
@@ -82,6 +84,10 @@ namespace Engine
 
         // Related to other entities
         void set_parent(const EntityID &parent);
+
+        // Serialization
+        void serialize(SerializationContext &ctx) const override;
+        void deserialize(SerializationContext &ctx) override;
 
         // Core
         void update(float deltaTime);

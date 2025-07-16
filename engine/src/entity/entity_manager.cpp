@@ -7,6 +7,13 @@
 
 namespace Engine
 {
+    EntityManager::EntityManager(Stage *owner_stage_ptr)
+    {
+        stage = owner_stage_ptr;
+
+        std::cout << "EntityManager initialized successfully!" << std::endl;
+    }
+
     Entity *EntityManager::create_entity(std::string name)
     {
         assert(generations.size() == entity_list.size() && "entity_list size and generations size do not match.");
@@ -64,15 +71,6 @@ namespace Engine
         return has_entity(entity.get_id());
     }
 
-    /**
-     * @brief Retrieves a pointer to the entity associated with the given EntityID.
-     *
-     * Searches the internal entity map for the provided ID. If an entity with that ID exists,
-     * a raw pointer to the entity is returned. If not found, returns nullptr.
-     *
-     * @param id The unique identifier of the entity to look up.
-     * @return Pointer to the Entity if found, or nullptr if no entity with the given ID exists.
-     */
     Entity *EntityManager::get_entity_by_id(const EntityID &id) const
     {
         auto found_entity = entity_list.find(id);
@@ -96,5 +94,50 @@ namespace Engine
         {
             entity_pair.second.get()->update(delta_time);
         }
+    }
+
+    // Serialization
+    void EntityManager::serialize(SerializationContext &ctx) const
+    {
+        ctx.begin_array("entities");
+
+        for (const auto &[id, entity_ptr] : entity_list)
+        {
+            entity_ptr->serialize(ctx);
+        }
+
+        ctx.end_array();
+    }
+
+    void EntityManager::deserialize(SerializationContext &ctx)
+    {
+        entity_list.clear();
+        generations.clear();
+        free_indices.clear();
+
+        ctx.begin_array("entities");
+
+        for (int i = 0; i < ctx.array_size(); i++)
+        {
+            ctx.begin_object();
+
+            auto entity = std::make_unique<Entity>("");
+            entity->deserialize(ctx);
+
+            EntityID id = entity->get_id();
+
+            if (id.index >= generations.size())
+            {
+                generations.resize(id.index + 1, 0);
+            }
+            generations[id.index] = id.generation;
+
+            entity->set_manager(this);
+            entity_list[id] = std::move(entity);
+
+            ctx.end_object();
+        }
+
+        ctx.end_array();
     }
 }

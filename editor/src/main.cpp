@@ -3,6 +3,10 @@
 #include "core.h"
 #include "stage/stage.h"
 #include "viewport/viewport.h"
+#include "utils/guid.h"
+
+#include "component/transform_component.h"
+#include "component/component_registry.h"
 
 int main()
 {
@@ -16,6 +20,9 @@ int main()
 
     auto stage = core.createStage(false);
     auto viewport = std::make_shared<Engine::Viewport>("Engine Window", 1280, 720);
+
+    std::unique_ptr<Engine::TransformComponent> transform = Engine::ComponentRegistry::instance().create_typed<Engine::TransformComponent>();
+    std::cout << "X: " << transform->x << std::endl;
 
     if (!viewport->initialize())
     {

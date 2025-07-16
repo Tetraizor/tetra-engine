@@ -3,6 +3,7 @@
 #include <memory>
 #include "viewport/viewport.h"
 #include "entity/entity_manager.h"
+#include "component/component_manager.h"
 
 namespace Engine
 {
@@ -24,11 +25,13 @@ namespace Engine
         bool is_headless() const;
 
         EntityManager &get_entity_manager();
+        ComponentManager &get_component_manager();
 
     private:
         bool headless;
         std::shared_ptr<Viewport> viewport;
 
         EntityManager entity_manager;
+        ComponentManager component_manager;
     };
 }

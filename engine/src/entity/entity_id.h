@@ -4,6 +4,8 @@
 #include <functional>
 #include <iostream>
 
+#include "serialization/serialization_context.h"
+
 namespace Engine
 {
     struct EntityID
@@ -27,6 +29,10 @@ namespace Engine
         {
             return !(*this == other);
         }
+
+        void serialize(SerializationContext &ctx) const;
+
+        void deserialize(SerializationContext &ctx);
     };
 
     inline std::ostream &operator<<(std::ostream &os, const EntityID &id)

@@ -15,6 +15,15 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # --- EXTERNAL LIBRARIES --- 
+
+# nlohmann/json
+FetchContent_Declare(
+  nlohmann_json
+  GIT_REPOSITORY https://github.com/nlohmann/json.git
+  GIT_TAG v3.12.0
+)
+FetchContent_MakeAvailable(nlohmann_json)
+
 # SDL
 set(SDL_SHARED OFF CACHE BOOL "Build SDL shared?" FORCE)
 set(SDL_STATIC ON  CACHE BOOL "Build SDL static?"  FORCE)

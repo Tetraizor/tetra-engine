@@ -8,7 +8,10 @@ target_include_directories(TetraEngine PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
-target_link_libraries(TetraEngine PRIVATE SDL3::SDL3)
+target_link_libraries(TetraEngine PRIVATE 
+  SDL3::SDL3
+  nlohmann_json::nlohmann_json  
+)
 
 foreach(CONFIG_TYPE IN ITEMS Debug Release RelWithDebInfo MinSizeRel)
   string(TOUPPER ${CONFIG_TYPE} CONFIG_TYPE_UPPER)

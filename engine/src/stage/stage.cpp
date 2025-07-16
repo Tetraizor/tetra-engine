@@ -3,9 +3,12 @@
 #include "entity/entity.h"
 #include "component/component.h"
 
+#include <memory>
+
 namespace Engine
 {
-    Stage::Stage(bool headless) : headless(headless) {}
+    Stage::Stage(bool headless) : headless(headless), entity_manager(this), component_manager(this) {}
+
     Stage::~Stage() = default;
 
     void Stage::setup()
@@ -50,5 +53,10 @@ namespace Engine
     EntityManager &Stage::get_entity_manager()
     {
         return entity_manager;
+    }
+
+    ComponentManager &Stage::get_component_manager()
+    {
+        return component_manager;
     }
 }
