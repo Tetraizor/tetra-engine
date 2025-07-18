@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-option(BUILD_SHARED_ENGINE "Build engine as a shared DLL" OFF)
+option(BUILD_ENGINE_ONLY "Build engine as a shared DLL" OFF)
 
 include(FetchContent)
 
@@ -25,7 +25,10 @@ endfunction()
 
 # --- EXTERNAL LIBRARIES --- 
 
+message("Starting to fetch external libraries")
+
 # nlohmann/json
+message("Fetching nlohmann/json...")
 FetchContent_Declare(
   nlohmann_json
   GIT_REPOSITORY https://github.com/nlohmann/json.git
@@ -33,23 +36,23 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(nlohmann_json)
 
-# SDL
+# libsdl-org/SDL
+message("Fetching SDL3...")
 set(SDL_SHARED OFF CACHE BOOL "Build SDL shared?" FORCE)
 set(SDL_STATIC ON  CACHE BOOL "Build SDL static?"  FORCE)
 
-if(NOT EXISTS "${CMAKE_SOURCE_DIR}/external/SDL/CMakeLists.txt")
-  message(FATAL_ERROR "SDL submodule not found in external/SDL. Run: git submodule update --init --recursive")
-endif()
-
 FetchContent_Declare(
   SDL3
-  SOURCE_DIR ${CMAKE_SOURCE_DIR}/external/SDL
+  GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
+  GIT_TAG release-3.2.18
 )
 FetchContent_MakeAvailable(SDL3)
 
-# Add your subprojects
+message("Completed fetching external libraries")
+
+# --- SUBPROJECTS ---
 add_subdirectory(engine)
 
-if(NOT BUILD_SHARED_ENGINE)
+if(NOT BUILD_ENGINE_ONLY)
   add_subdirectory(editor)
 endif()

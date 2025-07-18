@@ -12,7 +12,7 @@ target_link_libraries(
     PRIVATE TetraEngine
 )
 
-if (NOT BUILD_SHARED_ENGINE)
+if (NOT BUILD_ENGINE_ONLY)
     if (MSVC)
         target_link_options(Editor PRIVATE "/WHOLEARCHIVE:TetraEngine")
     else()

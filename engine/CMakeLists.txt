@@ -4,7 +4,7 @@ file(GLOB_RECURSE ALL_ENGINE_SOURCES
 )
 
 # Build TetraEngine as shared or static
-if (BUILD_SHARED_ENGINE)
+if (BUILD_ENGINE_ONLY)
     message(STATUS "Building engine as shared DLL")
     add_library(TetraEngine SHARED ${ALL_ENGINE_SOURCES})
     target_compile_definitions(TetraEngine PRIVATE TETRA_ENGINE_EXPORTS)
