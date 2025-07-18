@@ -1,11 +1,11 @@
-#include "Core.h"
+#include "core.h"
+
 #include <SDL3/SDL.h>
 #include <iostream>
 #include <algorithm>
 
 namespace Engine
 {
-
     Core::Core() = default;
 
     Core::~Core()

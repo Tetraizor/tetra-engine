@@ -36,6 +36,8 @@ namespace Engine
         {
             static_assert(std::is_base_of<Component, T>::value, "T must derive from Component");
 
+            std::cout << "[ComponentRegistry] Registered component with name " << name << std::endl;
+
             std::type_index type_index(typeid(T));
             creators[name] = []()
             { return std::make_unique<T>(); };

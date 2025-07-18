@@ -1,4 +1,5 @@
 #include "component_registry.h"
+#include "utils/component_utils.h"
 
 #include <cassert>
 

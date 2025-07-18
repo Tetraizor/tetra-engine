@@ -1,3 +1,5 @@
+#pragma once
+
 #include "component.h"
 #include "entity/entity.h"
 
@@ -23,4 +25,6 @@ namespace Engine
         void update(float delta_time) override {}
         void setup() override;
     };
+
+    void forceLinkTransformComponentRegistration();
 }

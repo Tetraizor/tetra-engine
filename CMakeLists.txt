@@ -5,14 +5,23 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+option(BUILD_SHARED_ENGINE "Build engine as a shared DLL" OFF)
+
 include(FetchContent)
 
 # Output folder for final binaries
-set(DIST_DIR ${CMAKE_SOURCE_DIR}/dist/${CMAKE_SYSTEM_NAME}/$<CONFIG>)
+set(OUTPUT_BASE_DIR ${CMAKE_SOURCE_DIR}/dist/${CMAKE_SYSTEM_NAME})
 
-# Platform-specific settings
-set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+function(set_target_output_dirs target)
+    foreach(OUTPUT_CONFIG ${CMAKE_CONFIGURATION_TYPES})
+        string(TOUPPER ${OUTPUT_CONFIG} OUTPUT_CONFIG_UPPER)
+        set_target_properties(${target} PROPERTIES
+            RUNTIME_OUTPUT_DIRECTORY_${OUTPUT_CONFIG_UPPER} "${CMAKE_SOURCE_DIR}/dist/${CMAKE_SYSTEM_NAME}/${OUTPUT_CONFIG}"
+            LIBRARY_OUTPUT_DIRECTORY_${OUTPUT_CONFIG_UPPER} "${CMAKE_SOURCE_DIR}/dist/${CMAKE_SYSTEM_NAME}/${OUTPUT_CONFIG}"
+            ARCHIVE_OUTPUT_DIRECTORY_${OUTPUT_CONFIG_UPPER} "${CMAKE_SOURCE_DIR}/dist/${CMAKE_SYSTEM_NAME}/${OUTPUT_CONFIG}"
+        )
+    endforeach()
+endfunction()
 
 # --- EXTERNAL LIBRARIES --- 
 
@@ -40,4 +49,7 @@ FetchContent_MakeAvailable(SDL3)
 
 # Add your subprojects
 add_subdirectory(engine)
-add_subdirectory(editor)
+
+if(NOT BUILD_SHARED_ENGINE)
+  add_subdirectory(editor)
+endif()

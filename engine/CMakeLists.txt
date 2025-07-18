@@ -1,24 +1,28 @@
-file(GLOB_RECURSE ENGINE_SRC CONFIGURE_DEPENDS
+# Gather all .cpp files in src/
+file(GLOB_RECURSE ALL_ENGINE_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
 )
 
-add_library(TetraEngine STATIC ${ENGINE_SRC})
+# Build TetraEngine as shared or static
+if (BUILD_SHARED_ENGINE)
+    message(STATUS "Building engine as shared DLL")
+    add_library(TetraEngine SHARED ${ALL_ENGINE_SOURCES})
+    target_compile_definitions(TetraEngine PRIVATE TETRA_ENGINE_EXPORTS)
+else()
+    message(STATUS "Building engine as static library")
+    add_library(TetraEngine STATIC ${ALL_ENGINE_SOURCES})
+endif()
 
+# Include paths
 target_include_directories(TetraEngine PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/src
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+    $<INSTALL_INTERFACE:include>
 )
 
-target_link_libraries(TetraEngine PRIVATE 
-  SDL3::SDL3
-  nlohmann_json::nlohmann_json  
+# Link dependencies
+target_link_libraries(TetraEngine
+    PUBLIC SDL3::SDL3
+    PUBLIC nlohmann_json::nlohmann_json
 )
 
-foreach(CONFIG_TYPE IN ITEMS Debug Release RelWithDebInfo MinSizeRel)
-  string(TOUPPER ${CONFIG_TYPE} CONFIG_TYPE_UPPER)
-  set_target_properties(TetraEngine PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY_${CONFIG_TYPE_UPPER} ${DIST_DIR} 
-    LIBRARY_OUTPUT_DIRECTORY_${CONFIG_TYPE_UPPER} ${DIST_DIR} 
-    ARCHIVE_OUTPUT_DIRECTORY_${CONFIG_TYPE_UPPER} ${DIST_DIR} 
-    PDB_OUTPUT_DIRECTORY_${CONFIG_TYPE_UPPER}     ${DIST_DIR} 
-  )
-endforeach()
+set_target_output_dirs(TetraEngine)
