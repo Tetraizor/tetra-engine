@@ -13,14 +13,26 @@ include(FetchContent)
 set(OUTPUT_BASE_DIR ${CMAKE_SOURCE_DIR}/dist/${CMAKE_SYSTEM_NAME})
 
 function(set_target_output_dirs target)
-    foreach(OUTPUT_CONFIG ${CMAKE_CONFIGURATION_TYPES})
-        string(TOUPPER ${OUTPUT_CONFIG} OUTPUT_CONFIG_UPPER)
+    if(CMAKE_CONFIGURATION_TYPES) # multi-config (Visual Studio, Xcode, etc.)
+        foreach(OUTPUT_CONFIG ${CMAKE_CONFIGURATION_TYPES})
+            string(TOUPPER ${OUTPUT_CONFIG} OUTPUT_CONFIG_UPPER)
+            set_target_properties(${target} PROPERTIES
+                RUNTIME_OUTPUT_DIRECTORY_${OUTPUT_CONFIG_UPPER} "${CMAKE_SOURCE_DIR}/dist/${CMAKE_SYSTEM_NAME}/${OUTPUT_CONFIG}"
+                LIBRARY_OUTPUT_DIRECTORY_${OUTPUT_CONFIG_UPPER} "${CMAKE_SOURCE_DIR}/dist/${CMAKE_SYSTEM_NAME}/${OUTPUT_CONFIG}"
+                ARCHIVE_OUTPUT_DIRECTORY_${OUTPUT_CONFIG_UPPER} "${CMAKE_SOURCE_DIR}/dist/${CMAKE_SYSTEM_NAME}/${OUTPUT_CONFIG}"
+            )
+        endforeach()
+    else() # single-config (Unix Makefiles, Ninja, etc.)
+        set(CONFIG "${CMAKE_BUILD_TYPE}")
+        if(NOT CONFIG)
+            set(CONFIG "Debug")
+        endif()
         set_target_properties(${target} PROPERTIES
-            RUNTIME_OUTPUT_DIRECTORY_${OUTPUT_CONFIG_UPPER} "${CMAKE_SOURCE_DIR}/dist/${CMAKE_SYSTEM_NAME}/${OUTPUT_CONFIG}"
-            LIBRARY_OUTPUT_DIRECTORY_${OUTPUT_CONFIG_UPPER} "${CMAKE_SOURCE_DIR}/dist/${CMAKE_SYSTEM_NAME}/${OUTPUT_CONFIG}"
-            ARCHIVE_OUTPUT_DIRECTORY_${OUTPUT_CONFIG_UPPER} "${CMAKE_SOURCE_DIR}/dist/${CMAKE_SYSTEM_NAME}/${OUTPUT_CONFIG}"
+            RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/dist/${CMAKE_SYSTEM_NAME}/${CONFIG}"
+            LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/dist/${CMAKE_SYSTEM_NAME}/${CONFIG}"
+            ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/dist/${CMAKE_SYSTEM_NAME}/${CONFIG}"
         )
-    endforeach()
+    endif()
 endfunction()
 
 # --- EXTERNAL LIBRARIES --- 
@@ -41,10 +53,12 @@ message("Fetching SDL3...")
 set(SDL_SHARED OFF CACHE BOOL "Build SDL shared?" FORCE)
 set(SDL_STATIC ON  CACHE BOOL "Build SDL static?"  FORCE)
 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 FetchContent_Declare(
-  SDL3
-  GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-  GIT_TAG release-3.2.18
+    SDL3
+    GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
+    GIT_TAG release-3.2.18
 )
 FetchContent_MakeAvailable(SDL3)
 

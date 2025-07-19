@@ -45,11 +45,11 @@ namespace Engine
 namespace std
 {
     template <>
-    struct std::hash<Engine::EntityID>
+    struct hash<Engine::EntityID>
     {
-        std::size_t operator()(const Engine::EntityID &id) const noexcept
+        size_t operator()(const Engine::EntityID &id) const noexcept
         {
-            return std::hash<uint64_t>()(
+            return hash<uint64_t>()(
                 (static_cast<uint64_t>(id.generation) << 32) | id.index);
         }
     };

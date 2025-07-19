@@ -1,5 +1,5 @@
 #pragma once
-#include "component_registry.h"
+#include "component/component_registry.h"
 #include <memory>
 
 #define REGISTER_COMPONENT_TYPE(Type, name_str)                      \

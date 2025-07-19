@@ -6,6 +6,7 @@
 namespace Engine
 {
     class ComponentRegistry;
+    class Entity;
 
     class Component : public Serializable
     {

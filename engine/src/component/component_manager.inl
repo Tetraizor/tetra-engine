@@ -1,7 +1,8 @@
 #pragma once
 
-#include "stage/stage.h"
 #include "entity/entity_manager.h"
+#include "entity/entity.h"
+#include "component/component_registry.h"
 
 namespace Engine
 {
@@ -21,10 +22,10 @@ namespace Engine
 
         std::unique_ptr<T> component_ptr = ComponentRegistry::instance().create<T>();
 
-        component_ptr->id = id;
+        component_ptr->id = component_id;
         component_ptr->entity = entity;
 
-        component_list[id] = std::move(component_ptr);
-        return component_list[id].get();
+        component_list[component_id] = std::move(component_ptr);
+        return component_list[component_id].get();
     }
 }

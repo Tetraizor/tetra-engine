@@ -14,12 +14,20 @@ target_link_libraries(
 
 if (NOT BUILD_ENGINE_ONLY)
     if (MSVC)
-        target_link_options(Editor PRIVATE "/WHOLEARCHIVE:TetraEngine")
+        target_link_options(Editor 
+            PRIVATE 
+            "/WHOLEARCHIVE:TetraEngine"
+        )
     else()
-        target_link_options(Editor PRIVATE
-            "-Wl,--whole-archive" TetraEngine "-Wl,--no-whole-archive"
+        target_link_options(Editor 
+            PRIVATE  
+            "-Wl,--whole-archive"
+            $<TARGET_FILE:TetraEngine>
+            "-Wl,--no-whole-archive"        
         )
     endif()
+else()
+    target_link_libraries(Editor PRIVATE TetraEngine)
 endif()
 
 # Platform-specific resources

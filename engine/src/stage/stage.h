@@ -3,11 +3,11 @@
 #include <memory>
 #include "viewport/viewport.h"
 #include "entity/entity_manager.h"
-#include "component/component_manager.h"
 
 namespace Engine
 {
     class Viewport;
+    class ComponentManager;
 
     class Stage
     {
@@ -31,7 +31,7 @@ namespace Engine
         bool headless;
         std::shared_ptr<Viewport> viewport;
 
-        EntityManager entity_manager;
-        ComponentManager component_manager;
+        std::unique_ptr<EntityManager> entity_manager;
+        std::unique_ptr<ComponentManager> component_manager;
     };
 }

@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <memory>
 
+#include "stage/stage.h"
 #include "component/component_id.h"
 #include "component/component.h"
 #include "entity/entity_id.h"
@@ -12,7 +13,6 @@
 namespace Engine
 {
     class Component;
-    class Stage;
 
     class ComponentManager : public Serializable
     {

@@ -2,18 +2,23 @@
 #include "viewport/viewport.h"
 #include "entity/entity.h"
 #include "component/component.h"
+#include "component/component_manager.h"
 
 #include <memory>
 
 namespace Engine
 {
-    Stage::Stage(bool headless) : headless(headless), entity_manager(this), component_manager(this) {}
+    Stage::Stage(bool headless) : headless(headless)
+    {
+        entity_manager = std::make_unique<EntityManager>(this);
+        component_manager = std::make_unique<ComponentManager>(this);
+    }
 
     Stage::~Stage() = default;
 
     void Stage::setup()
     {
-        entity_manager.setup();
+        entity_manager->setup();
     }
 
     void Stage::render()
@@ -30,7 +35,7 @@ namespace Engine
 
     void Stage::update(float delta_time)
     {
-        entity_manager.update(delta_time);
+        entity_manager->update(delta_time);
     }
 
     void Stage::attach_viewport(std::shared_ptr<Viewport> vp)
@@ -52,11 +57,11 @@ namespace Engine
 
     EntityManager &Stage::get_entity_manager()
     {
-        return entity_manager;
+        return *entity_manager;
     }
 
     ComponentManager &Stage::get_component_manager()
     {
-        return component_manager;
+        return *component_manager;
     }
 }
