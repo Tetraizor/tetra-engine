@@ -29,13 +29,3 @@ namespace Engine
         void set_entity(Entity *entity) { this->entity = entity; }
     };
 }
-
-#define REGISTER_COMPONENT_AUTO(ComponentName, ComponentClassName) \
-    namespace                                                      \
-    {                                                              \
-        const bool registrar_##ComponentName = []() {                                               \
-            Engine::ComponentRegistry::instance().register_type<ComponentClassName>(                \
-                #ComponentName                \
-            );                                                                                      \
-            return true; }();         \
-    }

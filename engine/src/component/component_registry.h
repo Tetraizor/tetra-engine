@@ -139,3 +139,13 @@ namespace Engine
         std::unordered_map<std::type_index, std::string> type_names;
     };
 }
+
+#define REGISTER_COMPONENT(ComponentName, ComponentClassName) \
+    namespace                                                 \
+    {                                                         \
+        const bool registrar_##ComponentName = []() {                                               \
+            Engine::ComponentRegistry::instance().register_type<ComponentClassName>(                \
+                #ComponentName                \
+            );                                                                                      \
+            return true; }();    \
+    }

@@ -1,6 +1,5 @@
-#include "component.h"
+#include "component_registry.h"
 #include "transform_component.h"
-#include "utils/component_utils.h"
 
 namespace Engine
 {
@@ -9,8 +8,6 @@ namespace Engine
         std::cout << "Position for " << entity->get_name()
                   << " is (" << x << ", " << y << ")" << std::endl;
     }
-
-    void forceLinkTransformComponentRegistration() {}
 }
 
-REGISTER_COMPONENT_AUTO(TransformComponent, Engine::TransformComponent)
+REGISTER_COMPONENT(TransformComponent, Engine::TransformComponent)
