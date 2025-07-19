@@ -1,89 +1,93 @@
-#include "utils/guid.h"
+#include "serialization/json/json_serialization_context.h"
+
+#include "data/guid.h"
 #include "entity/entity_id.h"
 #include "component/component_id.h"
-#include "serialization/json/json_serialization_context.h"
 
 namespace Engine
 {
-    JSONSerializationContext::JSONSerializationContext(Stage *stage) : stage(stage), reading(false)
+    JSONSerializationContext::JSONSerializationContext(Stage *stage)
+        : stage(stage), reading(false), document()
     {
-        json = nlohmann::json::object();
-        node_stack.push_back(&json);
+        root = &document.root();
+        node_stack.push_back(*root);
     }
 
-    JSONSerializationContext::JSONSerializationContext(Stage *stage, const nlohmann::json &input) : stage(stage), json(input), reading(true)
+    JSONSerializationContext::JSONSerializationContext(Stage *stage, const Serialization::Json::JsonValue &input)
+        : stage(stage), reading(true)
     {
-        node_stack.push_back(&json);
+        root = const_cast<Serialization::Json::JsonValue *>(&input);
+        node_stack.push_back(*root);
     }
 
-    nlohmann::json JSONSerializationContext::get_result() const
+    Serialization::Json::JsonValue JSONSerializationContext::get_result()
     {
-        return json;
+        return document.root();
     }
 
     // Writing
     void JSONSerializationContext::write_UInt(uint32_t value, const std::string &field)
     {
-        (*node_stack.back())[field] = value;
+        (node_stack.back())[field].set_int(value);
     }
 
     void JSONSerializationContext::write_int(int32_t value, const std::string &field)
     {
-        (*node_stack.back())[field] = value;
+        (node_stack.back())[field].set_int(value);
     }
 
     void JSONSerializationContext::write_float(float value, const std::string &field)
     {
-        (*node_stack.back())[field] = value;
+        (node_stack.back())[field].set_float(value);
     }
 
     void JSONSerializationContext::write_string(const std::string &value, const std::string &field)
     {
-        (*node_stack.back())[field] = value;
+        (node_stack.back())[field].set_string(value);
     }
 
     void JSONSerializationContext::write_GUID(const GUID &value, const std::string &field)
     {
-        (*node_stack.back())[field] = value.to_string();
+        (node_stack.back())[field].set_string(value.to_string());
     }
 
     // Reading
     uint32_t JSONSerializationContext::read_UInt(const std::string &field)
     {
-        return node_stack.back()->at(field).get<uint32_t>();
+        return node_stack.back().get(field).get_int().value();
     }
 
     int32_t JSONSerializationContext::read_int(const std::string &field)
     {
-        return node_stack.back()->at(field).get<int32_t>();
+        return node_stack.back().get(field).get_int().value();
     }
 
     float JSONSerializationContext::read_float(const std::string &field)
     {
-        return node_stack.back()->at(field).get<float>();
+        return node_stack.back().get(field).get_float().value();
     }
 
     std::string JSONSerializationContext::read_string(const std::string &field)
     {
-        return node_stack.back()->at(field).get<std::string>();
+        return node_stack.back().get(field).get_string().value();
     }
 
     GUID JSONSerializationContext::read_GUID(const std::string &field)
     {
-        std::string s = node_stack.back()->at(field).get<std::string>();
-        return GUID::from_string(s);
+        std::string guid_string = node_stack.back().get(field).get_string().value();
+        return GUID::from_string(guid_string);
     }
 
     // Object and Array Scoping
     void JSONSerializationContext::begin_object(const std::string &field)
     {
-        (*node_stack.back())[field] = nlohmann::json::object();
-        node_stack.push_back(&((*node_stack.back())[field]));
+        (*node_stack.back())[field] = Serialization::Json::JsonValue::object();
+        node_stack.push_back(&(*node_stack.back())[field]);
     }
 
     void JSONSerializationContext::begin_object()
     {
-        node_stack.back()->push_back(nlohmann::json::object());
+        node_stack.back()->push_back(Serialization::Json::JsonValue::object());
         node_stack.push_back(&node_stack.back()->back());
     }
 

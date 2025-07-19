@@ -1,8 +1,8 @@
 #pragma once
 
-#include <nlohmann/json.hpp>
 #include <unordered_map>
 #include "serialization/serialization_context.h"
+#include "serialization/json/json_utils.h"
 
 namespace Engine
 {
@@ -20,12 +20,12 @@ namespace Engine
          * @param stage Pointer to the Stage being deserialized into.
          * @param input The JSON object to read from.
          */
-        JSONSerializationContext(Stage *stage, const nlohmann::json &input);
+        JSONSerializationContext(Stage *stage, const Serialization::Json::JsonValue &input);
 
         /**
          * @brief After serialization, retrieve the JSON document.
          */
-        nlohmann::json get_result() const;
+        Serialization::Json::JsonValue get_result();
 
         // --- Writing overrides ---
 
@@ -65,15 +65,14 @@ namespace Engine
         virtual Stage *get_stage() override { return stage; }
 
     private:
-        Stage *stage;
-        nlohmann::json json;
+        Stage *stage = nullptr;
+        Serialization::Json::JsonDocument document;
+        Serialization::Json::JsonValue *root = nullptr;
         bool reading = false;
 
         std::unordered_map<EntityID, EntityID> entity_map;
         std::unordered_map<ComponentID, ComponentID> component_map;
 
-        std::vector<nlohmann::json *> node_stack;
-
-    protected:
+        std::vector<Serialization::Json::JsonValue> node_stack;
     };
 }

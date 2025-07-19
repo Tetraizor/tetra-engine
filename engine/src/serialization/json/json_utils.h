@@ -14,7 +14,7 @@ namespace Engine::Serialization::Json
         JsonDocument();
         ~JsonDocument();
 
-        bool from_text(const std::string &json_text);
+        void from_text(const std::string &json_text);
         std::string to_text(bool indent = false) const;
 
         JsonValue root();
@@ -64,6 +64,11 @@ namespace Engine::Serialization::Json
         void set_bool(bool value);
 
         static JsonValue null();
+        static JsonValue object();
+        static JsonValue array();
+
+        void make_object();
+        void make_array();
 
     private:
         struct Impl;

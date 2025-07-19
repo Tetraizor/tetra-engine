@@ -11,16 +11,16 @@ namespace Engine::Serialization::Json
 
     struct JsonValue::Impl
     {
-        nlohmann::json *node = nullptr;
+        std::shared_ptr<nlohmann::json> node;
 
         Impl() = default;
-        explicit Impl(nlohmann::json *n) : node(n) {}
+        explicit Impl(std::shared_ptr<nlohmann::json> n) : node(std::move(n)) {}
     };
 
     JsonDocument::JsonDocument() : impl_ptr(std::make_unique<Impl>()) {}
     JsonDocument::~JsonDocument() = default;
 
-    bool JsonDocument::from_text(const std::string &json_text)
+    void JsonDocument::from_text(const std::string &json_text)
     {
         try
         {
@@ -28,11 +28,8 @@ namespace Engine::Serialization::Json
         }
         catch (const std::exception &e)
         {
-            std::cerr << "[JsonDocument] JSON parse error: " << e.what() << std::endl;
-            return false;
+            throw std::runtime_error(std::string("JSON parse error: ") + e.what());
         }
-
-        return true;
     }
 
     std::string JsonDocument::to_text(bool indent) const
@@ -49,7 +46,8 @@ namespace Engine::Serialization::Json
 
     JsonValue JsonDocument::root()
     {
-        return JsonValue(new JsonValue::Impl(&impl_ptr->root_json));
+        std::shared_ptr<nlohmann::json> ptr(&impl_ptr->root_json, [](nlohmann::json *) {});
+        return JsonValue(new JsonValue::Impl(ptr));
     }
 
     JsonValue::JsonValue() : impl_ptr(std::make_unique<Impl>(nullptr)) {}
@@ -106,14 +104,18 @@ namespace Engine::Serialization::Json
         if (!is_object() || !has_key(key))
             return JsonValue::null();
 
-        return JsonValue(new Impl(&(*impl_ptr->node)[key]));
+        nlohmann::json *child_raw = &(*impl_ptr->node)[key];
+
+        std::shared_ptr<nlohmann::json> child_ptr(impl_ptr->node, child_raw);
+
+        return JsonValue(new Impl(std::move(child_ptr)));
     }
 
     void JsonValue::set(const std::string &key, const JsonValue &value)
     {
         if (!is_object())
         {
-            *impl_ptr->node = nlohmann::json::object();
+            make_object();
         }
 
         (*impl_ptr->node)[key] = *(value.impl_ptr->node);
@@ -131,14 +133,20 @@ namespace Engine::Serialization::Json
         if (!is_array() || index >= size())
             return JsonValue::null();
 
-        return JsonValue(new Impl(&(*impl_ptr->node)[index]));
+        nlohmann::json *child_raw = &(*impl_ptr->node)[index];
+
+        std::shared_ptr<nlohmann::json> child_ptr(
+            impl_ptr->node,
+            child_raw);
+
+        return JsonValue(new Impl(std::move(child_ptr)));
     }
 
     void JsonValue::append(const JsonValue &value)
     {
         if (!is_array())
         {
-            *impl_ptr->node = nlohmann::json::array();
+            make_array();
         }
 
         impl_ptr->node->push_back(*(value.impl_ptr->node));
@@ -195,6 +203,42 @@ namespace Engine::Serialization::Json
     JsonValue JsonValue::null()
     {
         return JsonValue(new Impl(nullptr));
+    }
+
+    JsonValue JsonValue::object()
+    {
+        auto obj_ptr = std::make_shared<nlohmann::json>(nlohmann::json::object());
+        return JsonValue(new Impl(std::move(obj_ptr)));
+    }
+
+    JsonValue JsonValue::array()
+    {
+        auto arr_ptr = std::make_shared<nlohmann::json>(nlohmann::json::array());
+        return JsonValue(new Impl(std::move(arr_ptr)));
+    }
+
+    void JsonValue::make_object()
+    {
+        if (!impl_ptr->node)
+        {
+            impl_ptr->node = std::make_shared<nlohmann::json>(nlohmann::json::object());
+        }
+        else
+        {
+            *(impl_ptr->node) = nlohmann::json::object();
+        }
+    }
+
+    void JsonValue::make_array()
+    {
+        if (!impl_ptr->node)
+        {
+            impl_ptr->node = std::make_shared<nlohmann::json>(nlohmann::json::array());
+        }
+        else
+        {
+            *(impl_ptr->node) = nlohmann::json::array();
+        }
     }
 
     JsonValue JsonValue::operator[](const std::string &key) const
