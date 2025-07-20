@@ -102,8 +102,9 @@ namespace Engine
         };
 
     private:
-        std::array<uint8_t, SIZE>
-            data;
+        friend struct std::hash<Engine::GUID>;
+
+        std::array<uint8_t, SIZE> data;
 
         static uint8_t hex_char_to_byte(char c)
         {
@@ -114,6 +115,21 @@ namespace Engine
             if ('A' <= c && c <= 'F')
                 return 10 + (c - 'A');
             return 0;
+        }
+    };
+}
+
+namespace std
+{
+    template <>
+    struct hash<Engine::GUID>
+    {
+        size_t operator()(const Engine::GUID &guid) const noexcept
+        {
+            const uint64_t *p = reinterpret_cast<const uint64_t *>(guid.data.data());
+            size_t h1 = std::hash<uint64_t>{}(p[0]);
+            size_t h2 = std::hash<uint64_t>{}(p[1]);
+            return h1 ^ (h2 << 1);
         }
     };
 }

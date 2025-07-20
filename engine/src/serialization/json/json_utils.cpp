@@ -54,6 +54,20 @@ namespace Engine::Serialization::Json
     JsonValue::JsonValue(Impl *impl) : impl_ptr(std::unique_ptr<Impl>(impl)) {}
     JsonValue::~JsonValue() = default;
 
+    JsonValue::JsonValue(JsonValue &&other) noexcept
+        : impl_ptr(std::move(other.impl_ptr))
+    {
+    }
+
+    JsonValue &JsonValue::operator=(JsonValue &&other) noexcept
+    {
+        if (this != &other)
+        {
+            impl_ptr = std::move(other.impl_ptr);
+        }
+        return *this;
+    }
+
     bool JsonValue::is_null() const
     {
         return impl_ptr->node == nullptr || impl_ptr->node->is_null();

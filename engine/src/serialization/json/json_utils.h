@@ -30,6 +30,12 @@ namespace Engine::Serialization::Json
         JsonValue();
         ~JsonValue();
 
+        JsonValue(const JsonValue &) = delete;
+        JsonValue &operator=(const JsonValue &) = delete;
+
+        JsonValue(JsonValue &&) noexcept;
+        JsonValue &operator=(JsonValue &&) noexcept;
+
         bool is_null() const;
         bool is_object() const;
         bool is_array() const;

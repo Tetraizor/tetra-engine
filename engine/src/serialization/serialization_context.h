@@ -25,7 +25,7 @@ namespace Engine
         virtual void write_int(int32_t value, const std::string &field) = 0;
         virtual void write_float(float value, const std::string &field) = 0;
         virtual void write_string(const std::string &value, const std::string &field) = 0;
-        virtual void write_GUID(const GUID &value, const std::string &field) = 0;
+        virtual void write_guid(const GUID &value, const std::string &field) = 0;
 
         // --- Reading (Deserialization) ---
 
@@ -33,7 +33,7 @@ namespace Engine
         virtual int32_t read_int(const std::string &field) = 0;
         virtual float read_float(const std::string &field) = 0;
         virtual std::string read_string(const std::string &field) = 0;
-        virtual GUID read_GUID(const std::string &field) = 0;
+        virtual GUID read_guid(const std::string &field) = 0;
 
         // --- Object and Array Scoping
 
@@ -45,14 +45,6 @@ namespace Engine
         virtual void begin_array() = 0;
         virtual void end_array() = 0;
         virtual size_t array_size() const = 0;
-
-        // --- Helpers ---
-
-        virtual void register_entity(const EntityID &old_id, const EntityID &new_id) = 0;
-        virtual EntityID resolve_entity(const EntityID &old_id) = 0;
-
-        virtual void register_component(const ComponentID &old_id, const ComponentID &new_id) = 0;
-        virtual ComponentID resolve_component(const ComponentID &old_id) = 0;
 
         virtual Stage *get_stage() = 0;
 

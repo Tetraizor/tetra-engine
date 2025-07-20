@@ -1,11 +1,11 @@
 #pragma once
 
+#include "entity/entity_id.h"
+#include "serialization/serializable.h"
+
 #include <iostream>
 #include <unordered_map>
 #include <memory>
-
-#include "entity/entity_id.h"
-#include "serialization/serializable.h"
 
 namespace Engine
 {

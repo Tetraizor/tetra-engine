@@ -1,5 +1,10 @@
+# Gather all .cpp files in src/
+file(GLOB_RECURSE ALL_EDITOR_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
+)
+
 add_executable(Editor
-    src/main.cpp
+    ${ALL_EDITOR_SOURCES}
 )
 
 target_include_directories(

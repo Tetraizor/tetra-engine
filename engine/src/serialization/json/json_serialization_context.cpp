@@ -1,24 +1,25 @@
 #include "serialization/json/json_serialization_context.h"
 
 #include "data/guid.h"
-#include "entity/entity_id.h"
-#include "component/component_id.h"
+#include "serialization/json/json_utils.h"
 
 namespace Engine
 {
+    using Engine::Serialization::Json::JsonValue;
+
     JSONSerializationContext::JSONSerializationContext(Stage *stage)
         : stage(stage), reading(false), document()
     {
-        root = &document.root();
-        node_stack.push_back(*root);
+        node_stack.emplace_back(document.root());
     }
 
-    JSONSerializationContext::JSONSerializationContext(Stage *stage, const Serialization::Json::JsonValue &input)
-        : stage(stage), reading(true)
+    JSONSerializationContext::JSONSerializationContext(Stage *stage, JsonValue &&input)
+        : stage(stage), reading(true), document()
     {
-        root = const_cast<Serialization::Json::JsonValue *>(&input);
-        node_stack.push_back(*root);
+        node_stack.push_back(std::move(input));
     }
+
+    JSONSerializationContext::~JSONSerializationContext() = default;
 
     Serialization::Json::JsonValue JSONSerializationContext::get_result()
     {
@@ -28,33 +29,67 @@ namespace Engine
     // Writing
     void JSONSerializationContext::write_UInt(uint32_t value, const std::string &field)
     {
-        (node_stack.back())[field].set_int(value);
+        auto &parent = node_stack.back();
+
+        if (parent.is_null())
+            parent.make_object();
+
+        if (!parent.is_object())
+            throw std::runtime_error("write_int() on non-object parent");
+
+        parent.set(field, JsonValue());
+
+        parent.get(field).set_int(static_cast<int>(value));
     }
 
     void JSONSerializationContext::write_int(int32_t value, const std::string &field)
     {
-        (node_stack.back())[field].set_int(value);
+        auto &parent = node_stack.back();
+        if (parent.is_null())
+            parent.make_object();
+
+        if (!parent.is_object())
+            throw std::runtime_error("write_int() on non-object parent");
+
+        parent.set(field, JsonValue());
+        parent.get(field).set_int(value);
     }
 
     void JSONSerializationContext::write_float(float value, const std::string &field)
     {
-        (node_stack.back())[field].set_float(value);
+        auto &parent = node_stack.back();
+        if (parent.is_null())
+            parent.make_object();
+
+        if (!parent.is_object())
+            throw std::runtime_error("write_float() on non-object parent");
+
+        parent.set(field, JsonValue());
+        parent.get(field).set_float(value);
     }
 
     void JSONSerializationContext::write_string(const std::string &value, const std::string &field)
     {
-        (node_stack.back())[field].set_string(value);
+        auto &parent = node_stack.back();
+        if (parent.is_null())
+            parent.make_object();
+
+        if (!parent.is_object())
+            throw std::runtime_error("write_string() on non-object parent");
+
+        parent.set(field, JsonValue());
+        parent.get(field).set_string(value);
     }
 
-    void JSONSerializationContext::write_GUID(const GUID &value, const std::string &field)
+    void JSONSerializationContext::write_guid(const GUID &value, const std::string &field)
     {
-        (node_stack.back())[field].set_string(value.to_string());
+        write_string(value.to_string(), field);
     }
 
     // Reading
     uint32_t JSONSerializationContext::read_UInt(const std::string &field)
     {
-        return node_stack.back().get(field).get_int().value();
+        return static_cast<uint32_t>(node_stack.back().get(field).get_int().value());
     }
 
     int32_t JSONSerializationContext::read_int(const std::string &field)
@@ -72,7 +107,7 @@ namespace Engine
         return node_stack.back().get(field).get_string().value();
     }
 
-    GUID JSONSerializationContext::read_GUID(const std::string &field)
+    GUID JSONSerializationContext::read_guid(const std::string &field)
     {
         std::string guid_string = node_stack.back().get(field).get_string().value();
         return GUID::from_string(guid_string);
@@ -81,94 +116,67 @@ namespace Engine
     // Object and Array Scoping
     void JSONSerializationContext::begin_object(const std::string &field)
     {
-        (*node_stack.back())[field] = Serialization::Json::JsonValue::object();
-        node_stack.push_back(&(*node_stack.back())[field]);
+        auto &parent = node_stack.back();
+
+        if (parent.is_null())
+            parent.make_object();
+
+        parent.set(field, JsonValue::object());
+        node_stack.push_back(parent.get(field));
     }
 
     void JSONSerializationContext::begin_object()
     {
-        node_stack.back()->push_back(Serialization::Json::JsonValue::object());
-        node_stack.push_back(&node_stack.back()->back());
+        auto &parent = node_stack.back();
+
+        if (parent.is_null())
+            parent.make_array();
+
+        parent.append(JsonValue::object());
+        node_stack.push_back(parent.get(parent.size() - 1));
     }
 
     void JSONSerializationContext::end_object()
     {
-        if (node_stack.size() > 1)
-        {
-            node_stack.pop_back();
-        }
-        else
-        {
+        if (node_stack.size() <= 1)
             throw std::runtime_error("end_object() called with no matching begin_object()");
-        }
+
+        node_stack.pop_back();
     }
 
     void JSONSerializationContext::begin_array(const std::string &field)
     {
-        (*node_stack.back())[field] = nlohmann::json::array();
-        node_stack.push_back(&((*node_stack.back())[field]));
+        auto &parent = node_stack.back();
+
+        if (parent.is_null())
+            parent.make_object();
+
+        parent.set(field, JsonValue::array());
+        node_stack.push_back(parent.get(field));
     }
 
     void JSONSerializationContext::begin_array()
     {
-        node_stack.back()->push_back(nlohmann::json::object());
-        node_stack.push_back(&node_stack.back()->back());
+        auto &parent = node_stack.back();
+
+        if (parent.is_null())
+            parent.make_array();
+
+        parent.append(JsonValue::array());
+        node_stack.push_back(parent.get(parent.size() - 1));
     }
 
     void JSONSerializationContext::end_array()
     {
-        if (node_stack.size() > 1)
-        {
-            node_stack.pop_back();
-        }
-        else
-        {
+        if (node_stack.size() <= 1)
             throw std::runtime_error("end_array() called with no matching begin_array()");
-        }
+
+        node_stack.pop_back();
     }
 
     size_t JSONSerializationContext::array_size() const
     {
-        if (node_stack.empty())
-            return 0;
-
-        const nlohmann::json *current = node_stack.back();
-        if (current->is_array())
-            return current->size();
-
-        return 0;
-    }
-
-    // Helpers
-    void JSONSerializationContext::register_entity(const EntityID &old_id, const EntityID &new_id)
-    {
-        entity_map[old_id] = new_id;
-    }
-
-    EntityID JSONSerializationContext::resolve_entity(const EntityID &old_id)
-    {
-        auto it = entity_map.find(old_id);
-        if (it == entity_map.end())
-        {
-            throw std::runtime_error("Unregistered EntityID reference during deserialization!");
-        }
-
-        return it->second;
-    }
-
-    void JSONSerializationContext::register_component(const ComponentID &old_id, const ComponentID &new_id)
-    {
-        component_map[old_id] = new_id;
-    }
-
-    ComponentID JSONSerializationContext::resolve_component(const ComponentID &old_id)
-    {
-        auto it = component_map.find(old_id);
-        if (it == component_map.end())
-        {
-            throw std::runtime_error("Unregistered ComponentID reference during deserialization!");
-        }
-
-        return it->second;
+        const auto &curr = node_stack.back();
+        return curr.is_array() ? curr.size() : 0;
     }
 }

@@ -49,8 +49,7 @@ namespace std
     {
         size_t operator()(const Engine::EntityID &id) const noexcept
         {
-            return hash<uint64_t>()(
-                (static_cast<uint64_t>(id.generation) << 32) | id.index);
+            return (static_cast<uint64_t>(id.generation) << 32) | id.index;
         }
     };
 }

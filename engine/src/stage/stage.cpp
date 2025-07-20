@@ -64,4 +64,29 @@ namespace Engine
     {
         return *component_manager;
     }
+
+    // Serialization
+    void Stage::serialize(SerializationContext &ctx) const
+    {
+        std::cout << "[Stage] Starting to serialize..." << std::endl;
+
+        entity_manager->serialize(ctx);
+        component_manager->serialize(ctx);
+
+        std::cout << "[Stage] Serializing finished." << std::endl;
+    }
+
+    void Stage::deserialize(SerializationContext &ctx)
+    {
+        std::cout << "[Stage] Starting to deserialize..." << std::endl;
+
+        std::cout << "[Stage] Stage name: " << ctx.read_string("stage_name") << std::endl;
+        guid = ctx.read_guid("guid");
+        name = ctx.read_string("name");
+
+        entity_manager->deserialize(ctx);
+        component_manager->deserialize(ctx);
+
+        std::cout << "[Stage] Deserializing finished for " << get_guid().to_string() << std::endl;
+    }
 }
