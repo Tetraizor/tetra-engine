@@ -17,21 +17,24 @@ namespace Engine::Serialization::Json
         void from_text(const std::string &json_text);
         std::string to_text(bool indent = false) const;
 
-        JsonValue root();
+        JsonValue &root();
 
     private:
         struct Impl;
         std::unique_ptr<Impl> impl_ptr;
+        std::unique_ptr<JsonValue> root_value;
     };
 
     class JsonValue
     {
+        friend class JsonDocument;
+
     public:
         JsonValue();
         ~JsonValue();
 
-        JsonValue(const JsonValue &) = delete;
-        JsonValue &operator=(const JsonValue &) = delete;
+        JsonValue(const JsonValue &other) noexcept;
+        JsonValue &operator=(const JsonValue &other) noexcept;
 
         JsonValue(JsonValue &&) noexcept;
         JsonValue &operator=(JsonValue &&) noexcept;

@@ -3,6 +3,8 @@
 #include "data/guid.h"
 #include "serialization/json/json_utils.h"
 
+#include <cassert>
+
 namespace Engine
 {
     using Engine::Serialization::Json::JsonValue;
@@ -10,18 +12,23 @@ namespace Engine
     JSONSerializationContext::JSONSerializationContext(Stage *stage)
         : stage(stage), reading(false), document()
     {
-        node_stack.emplace_back(document.root());
+        JsonValue &rootVal = document.root();
+
+        if (rootVal.is_null())
+            rootVal.make_object();
+
+        node_stack.emplace_back(rootVal);
     }
 
-    JSONSerializationContext::JSONSerializationContext(Stage *stage, JsonValue &&input)
-        : stage(stage), reading(true), document()
+    JSONSerializationContext::JSONSerializationContext(Stage *stage, JsonValue input)
+        : stage(stage), reading(true), document(), read_root(std::move(input))
     {
-        node_stack.push_back(std::move(input));
+        node_stack.emplace_back(read_root);
     }
 
     JSONSerializationContext::~JSONSerializationContext() = default;
 
-    Serialization::Json::JsonValue JSONSerializationContext::get_result()
+    Serialization::Json::JsonValue &JSONSerializationContext::get_result()
     {
         return document.root();
     }
@@ -29,35 +36,34 @@ namespace Engine
     // Writing
     void JSONSerializationContext::write_UInt(uint32_t value, const std::string &field)
     {
-        auto &parent = node_stack.back();
-
+        JsonValue &parent = node_stack.back();
         if (parent.is_null())
             parent.make_object();
 
         if (!parent.is_object())
-            throw std::runtime_error("write_int() on non-object parent");
+            throw std::runtime_error("write_UInt() on non-object parent");
 
-        parent.set(field, JsonValue());
-
-        parent.get(field).set_int(static_cast<int>(value));
+        JsonValue v;
+        v.set_int(static_cast<int>(value));
+        parent.set(field, v);
     }
 
     void JSONSerializationContext::write_int(int32_t value, const std::string &field)
     {
-        auto &parent = node_stack.back();
+        JsonValue &parent = node_stack.back();
         if (parent.is_null())
             parent.make_object();
-
         if (!parent.is_object())
             throw std::runtime_error("write_int() on non-object parent");
 
-        parent.set(field, JsonValue());
-        parent.get(field).set_int(value);
+        JsonValue v;
+        v.set_int(value);
+        parent.set(field, v);
     }
 
     void JSONSerializationContext::write_float(float value, const std::string &field)
     {
-        auto &parent = node_stack.back();
+        JsonValue &parent = node_stack.back();
         if (parent.is_null())
             parent.make_object();
 
@@ -70,7 +76,7 @@ namespace Engine
 
     void JSONSerializationContext::write_string(const std::string &value, const std::string &field)
     {
-        auto &parent = node_stack.back();
+        JsonValue &parent = node_stack.back();
         if (parent.is_null())
             parent.make_object();
 
@@ -116,7 +122,7 @@ namespace Engine
     // Object and Array Scoping
     void JSONSerializationContext::begin_object(const std::string &field)
     {
-        auto &parent = node_stack.back();
+        JsonValue &parent = node_stack.back();
 
         if (parent.is_null())
             parent.make_object();
@@ -127,7 +133,7 @@ namespace Engine
 
     void JSONSerializationContext::begin_object()
     {
-        auto &parent = node_stack.back();
+        JsonValue &parent = node_stack.back();
 
         if (parent.is_null())
             parent.make_array();
@@ -146,7 +152,7 @@ namespace Engine
 
     void JSONSerializationContext::begin_array(const std::string &field)
     {
-        auto &parent = node_stack.back();
+        JsonValue &parent = node_stack.back();
 
         if (parent.is_null())
             parent.make_object();
@@ -157,7 +163,7 @@ namespace Engine
 
     void JSONSerializationContext::begin_array()
     {
-        auto &parent = node_stack.back();
+        JsonValue &parent = node_stack.back();
 
         if (parent.is_null())
             parent.make_array();

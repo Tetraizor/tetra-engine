@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 option(BUILD_ENGINE_ONLY "Build engine as a shared DLL" OFF)
+option(BUILD_TESTS "Build unit tests" OFF)
 
 include(FetchContent)
 
@@ -69,4 +70,8 @@ add_subdirectory(engine)
 
 if(NOT BUILD_ENGINE_ONLY)
   add_subdirectory(editor)
+endif()
+
+if(BUILD_TESTS) 
+    add_subdirectory(tests)
 endif()

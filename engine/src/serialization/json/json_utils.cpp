@@ -1,6 +1,8 @@
 #include "json_utils.h"
+
 #include <nlohmann/json.hpp>
 #include <iostream>
+#include <cassert>
 
 namespace Engine::Serialization::Json
 {
@@ -17,7 +19,31 @@ namespace Engine::Serialization::Json
         explicit Impl(std::shared_ptr<nlohmann::json> n) : node(std::move(n)) {}
     };
 
-    JsonDocument::JsonDocument() : impl_ptr(std::make_unique<Impl>()) {}
+    JsonValue::JsonValue(const JsonValue &other) noexcept
+        : impl_ptr(std::make_unique<Impl>(other.impl_ptr->node))
+    {
+    }
+
+    // Copy‐assign: reconstruct our Impl to share the same node
+    JsonValue &JsonValue::operator=(const JsonValue &other) noexcept
+    {
+        if (this != &other)
+        {
+            impl_ptr = std::make_unique<Impl>(other.impl_ptr->node);
+        }
+        return *this;
+    }
+
+    JsonDocument::JsonDocument() : impl_ptr(std::make_unique<Impl>())
+    {
+        auto root_json_ptr = std::make_shared<nlohmann::json>();
+        *root_json_ptr = nlohmann::json::object();
+
+        impl_ptr->root_json = *root_json_ptr;
+
+        root_value = std::unique_ptr<JsonValue>(new JsonValue(new JsonValue::Impl(root_json_ptr)));
+    }
+
     JsonDocument::~JsonDocument() = default;
 
     void JsonDocument::from_text(const std::string &json_text)
@@ -30,6 +56,13 @@ namespace Engine::Serialization::Json
         {
             throw std::runtime_error(std::string("JSON parse error: ") + e.what());
         }
+
+        auto ptr = std::shared_ptr<nlohmann::json>(
+            new nlohmann::json(impl_ptr->root_json),
+            [](nlohmann::json *p)
+            { delete p; });
+
+        root_value.reset(new JsonValue(new JsonValue::Impl(ptr)));
     }
 
     std::string JsonDocument::to_text(bool indent) const
@@ -44,10 +77,11 @@ namespace Engine::Serialization::Json
         }
     }
 
-    JsonValue JsonDocument::root()
+    JsonValue &JsonDocument::root()
     {
-        std::shared_ptr<nlohmann::json> ptr(&impl_ptr->root_json, [](nlohmann::json *) {});
-        return JsonValue(new JsonValue::Impl(ptr));
+        assert(root_value != nullptr);
+
+        return *root_value;
     }
 
     JsonValue::JsonValue() : impl_ptr(std::make_unique<Impl>(nullptr)) {}
@@ -175,7 +209,10 @@ namespace Engine::Serialization::Json
 
     void JsonValue::set_string(const std::string &value)
     {
-        *impl_ptr->node = value;
+        if (!impl_ptr->node)
+            impl_ptr->node = std::make_shared<nlohmann::json>(value);
+        else
+            *impl_ptr->node = value;
     }
 
     std::optional<int> JsonValue::get_int() const
@@ -187,7 +224,10 @@ namespace Engine::Serialization::Json
 
     void JsonValue::set_int(int value)
     {
-        *impl_ptr->node = value;
+        if (!impl_ptr->node)
+            impl_ptr->node = std::make_shared<nlohmann::json>(value);
+        else
+            *impl_ptr->node = value;
     }
 
     std::optional<float> JsonValue::get_float() const
@@ -199,7 +239,10 @@ namespace Engine::Serialization::Json
 
     void JsonValue::set_float(float value)
     {
-        *impl_ptr->node = value;
+        if (!impl_ptr->node)
+            impl_ptr->node = std::make_shared<nlohmann::json>(value);
+        else
+            *impl_ptr->node = value;
     }
 
     std::optional<bool> JsonValue::get_bool() const
@@ -211,7 +254,10 @@ namespace Engine::Serialization::Json
 
     void JsonValue::set_bool(bool value)
     {
-        *impl_ptr->node = value;
+        if (!impl_ptr->node)
+            impl_ptr->node = std::make_shared<nlohmann::json>(value);
+        else
+            *impl_ptr->node = value;
     }
 
     JsonValue JsonValue::null()

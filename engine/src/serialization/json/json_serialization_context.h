@@ -25,14 +25,14 @@ namespace Engine
          * @param stage Pointer to the Stage being deserialized into.
          * @param input The JSON object to read from.
          */
-        JSONSerializationContext(Stage *stage, Serialization::Json::JsonValue &&input);
+        JSONSerializationContext(Stage *stage, Serialization::Json::JsonValue input);
 
         ~JSONSerializationContext() override;
 
         /**
          * @brief After serialization, retrieve the JSON result.
          */
-        Serialization::Json::JsonValue get_result();
+        Serialization::Json::JsonValue &get_result();
 
         // --- Writing overrides ---
         void write_UInt(uint32_t value, const std::string &field) override;
@@ -66,6 +66,7 @@ namespace Engine
         bool reading = false;
 
         Serialization::Json::JsonDocument document;
+        Serialization::Json::JsonValue read_root;
 
         std::vector<Serialization::Json::JsonValue> node_stack;
 
