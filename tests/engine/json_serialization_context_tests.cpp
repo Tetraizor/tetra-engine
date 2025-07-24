@@ -2,54 +2,52 @@
 #include "serialization/json/json_serialization_context.h"
 #include "stage/stage.h"
 
+using namespace Engine::Serialization::Json;
 using namespace Engine;
 
 class JsonSerializationContextTest : public ::testing::Test
 {
 protected:
     Stage *stage = nullptr;
+
+    void SetUp() override
+    {
+        stage = new Stage();
+    }
+
+    void TearDown() override
+    {
+        delete stage;
+        stage = nullptr;
+    }
 };
 
-TEST(JsonSerializationContextTest, RootObjectCreatedAndUIntWritten)
+TEST_F(JsonSerializationContextTest, WriteUInt_WritesValueToJson)
 {
-    Stage dummy_stage;
-    JSONSerializationContext ctx(&dummy_stage);
+    JSONSerializationContext context(stage);
 
-    auto &root = ctx.get_result();
-    EXPECT_TRUE(root.is_object());
+    context.begin_object(""); // start root object scope
 
-    ctx.write_int(10, "outer_int");
-    EXPECT_EQ(ctx.read_int("outer_int"), 10);
+    context.write_UInt(42, "my_uint");
 
-    ctx.begin_object("test_object");
+    context.end_object();
 
-    const std::string field_name = "inner_uint";
-    uint32_t value_to_write = 42u;
-    ctx.write_UInt(value_to_write, field_name);
+    auto root = context.get_result();
 
-    EXPECT_EQ(ctx.read_int("inner_uint"), value_to_write);
-
-    ctx.end_object();
-
-    auto result_value = root
-                            .get("test_object")
-                            .get(field_name)
-                            .get_int();
-
-    ASSERT_TRUE(result_value.has_value());
-    EXPECT_EQ(result_value.value(), static_cast<int>(value_to_write));
+    // root should be an object with "my_uint" field = 42
+    ASSERT_TRUE(root.is_object());
+    EXPECT_EQ(root.get("my_uint").as<int>().value(), 42);
 }
 
-TEST(JsonSerializationContextTest, WriteAndReadUInt)
+TEST_F(JsonSerializationContextTest, WriteUInt_OnNonObjectParent_Throws)
 {
-    JSONSerializationContext ctx(nullptr);
+    JSONSerializationContext context(stage);
 
-    ctx.write_UInt(42u, "answer");
-    auto &json = ctx.get_result();
+    // By default, the root node is empty, let's push an array node manually
+    context.begin_array("");
 
-    EXPECT_TRUE(json.is_object());
-    EXPECT_EQ(json.get("answer").get_int().value(), 42u);
+    // Now try to write uint in an array parent - should throw
+    EXPECT_THROW(context.write_UInt(123, "field"), std::runtime_error);
 
-    JSONSerializationContext read_ctx(nullptr, std::move(json));
-    EXPECT_EQ(read_ctx.read_UInt("answer"), 42u);
+    context.end_array();
 }

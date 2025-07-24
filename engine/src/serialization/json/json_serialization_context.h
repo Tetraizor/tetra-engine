@@ -1,7 +1,9 @@
 #pragma once
 
 #include "serialization/serialization_context.h"
-#include "serialization/json/json_utils.h"
+
+#include "serialization/json/json_value.h"
+#include "serialization/json/json_document.h"
 
 #include "entity/entity_id.h"
 #include "component/component_id.h"
@@ -11,6 +13,9 @@
 
 namespace Engine
 {
+    using Serialization::Json::JsonDocument;
+    using Serialization::Json::JsonValue;
+
     class JSONSerializationContext : public SerializationContext
     {
     public:
@@ -32,7 +37,7 @@ namespace Engine
         /**
          * @brief After serialization, retrieve the JSON result.
          */
-        Serialization::Json::JsonValue &get_result();
+        Serialization::Json::JsonValue get_result();
 
         // --- Writing overrides ---
         void write_UInt(uint32_t value, const std::string &field) override;
@@ -60,15 +65,16 @@ namespace Engine
 
         // --- Helpers ---
         Stage *get_stage() override { return stage; }
+        const JsonValue &current() const { return node_stack.back(); }
 
     private:
         Stage *stage = nullptr;
         bool reading = false;
 
-        Serialization::Json::JsonDocument document;
-        Serialization::Json::JsonValue read_root;
+        JsonDocument document;
+        JsonValue read_root;
 
-        std::vector<Serialization::Json::JsonValue> node_stack;
+        std::vector<JsonValue> node_stack;
 
         std::unordered_map<EntityID, EntityID> entity_map;
         std::unordered_map<ComponentID, ComponentID> component_map;

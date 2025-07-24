@@ -1,23 +1,18 @@
 #include "serialization/json/json_serialization_context.h"
 
 #include "data/guid.h"
-#include "serialization/json/json_utils.h"
+#include "serialization/json/json_value.h"
+#include "serialization/json/json_document.h"
 
-#include <cassert>
+#include <stdexcept>
 
 namespace Engine
 {
     using Engine::Serialization::Json::JsonValue;
 
     JSONSerializationContext::JSONSerializationContext(Stage *stage)
-        : stage(stage), reading(false), document()
+        : stage(stage), reading(false), document(), read_root(document.get_root())
     {
-        JsonValue &rootVal = document.root();
-
-        if (rootVal.is_null())
-            rootVal.make_object();
-
-        node_stack.emplace_back(rootVal);
     }
 
     JSONSerializationContext::JSONSerializationContext(Stage *stage, JsonValue input)
@@ -28,63 +23,58 @@ namespace Engine
 
     JSONSerializationContext::~JSONSerializationContext() = default;
 
-    Serialization::Json::JsonValue &JSONSerializationContext::get_result()
+    JsonValue JSONSerializationContext::get_result()
     {
-        return document.root();
+        return document.get_root();
     }
 
     // Writing
     void JSONSerializationContext::write_UInt(uint32_t value, const std::string &field)
     {
-        JsonValue &parent = node_stack.back();
-        if (parent.is_null())
-            parent.make_object();
+        auto &parent = node_stack.back();
+        if (parent.is_empty())
+            parent.set_empty_object(field);
 
         if (!parent.is_object())
             throw std::runtime_error("write_UInt() on non-object parent");
 
-        JsonValue v;
-        v.set_int(static_cast<int>(value));
-        parent.set(field, v);
+        parent.set(field, static_cast<int>(value));
     }
 
     void JSONSerializationContext::write_int(int32_t value, const std::string &field)
     {
-        JsonValue &parent = node_stack.back();
-        if (parent.is_null())
-            parent.make_object();
+        auto &parent = node_stack.back();
+        if (parent.is_empty())
+            parent.set_empty_object(field);
+
         if (!parent.is_object())
             throw std::runtime_error("write_int() on non-object parent");
 
-        JsonValue v;
-        v.set_int(value);
-        parent.set(field, v);
+        parent.set(field, value);
     }
 
     void JSONSerializationContext::write_float(float value, const std::string &field)
     {
-        JsonValue &parent = node_stack.back();
-        if (parent.is_null())
-            parent.make_object();
+        auto &parent = node_stack.back();
+        if (parent.is_empty())
+            parent.set_empty_object(field);
 
         if (!parent.is_object())
             throw std::runtime_error("write_float() on non-object parent");
 
-        parent.set(field, JsonValue());
-        parent.get(field).set_float(value);
+        parent.set(field, value);
     }
 
     void JSONSerializationContext::write_string(const std::string &value, const std::string &field)
     {
-        JsonValue &parent = node_stack.back();
-        if (parent.is_null())
-            parent.make_object();
+        auto &parent = node_stack.back();
+        if (parent.is_empty())
+            parent.set_empty_object(field);
 
         if (!parent.is_object())
             throw std::runtime_error("write_string() on non-object parent");
 
-        parent.set(field, JsonValue());
-        parent.get(field).set_string(value);
+        parent.set(field, value);
     }
 
     void JSONSerializationContext::write_guid(const GUID &value, const std::string &field)
@@ -95,50 +85,55 @@ namespace Engine
     // Reading
     uint32_t JSONSerializationContext::read_UInt(const std::string &field)
     {
-        return static_cast<uint32_t>(node_stack.back().get(field).get_int().value());
+        return static_cast<uint32_t>(node_stack.back().get(field).as<int>().value());
     }
 
     int32_t JSONSerializationContext::read_int(const std::string &field)
     {
-        return node_stack.back().get(field).get_int().value();
+        return node_stack.back().get(field).as<int>().value();
     }
 
     float JSONSerializationContext::read_float(const std::string &field)
     {
-        return node_stack.back().get(field).get_float().value();
+        return node_stack.back().get(field).as<float>().value();
     }
 
     std::string JSONSerializationContext::read_string(const std::string &field)
     {
-        return node_stack.back().get(field).get_string().value();
+        return node_stack.back().get(field).as<std::string>().value();
     }
 
     GUID JSONSerializationContext::read_guid(const std::string &field)
     {
-        std::string guid_string = node_stack.back().get(field).get_string().value();
+        auto guid_string = node_stack.back().get(field).as<std::string>().value();
         return GUID::from_string(guid_string);
     }
 
     // Object and Array Scoping
     void JSONSerializationContext::begin_object(const std::string &field)
     {
-        JsonValue &parent = node_stack.back();
+        auto &parent = node_stack.back();
 
-        if (parent.is_null())
-            parent.make_object();
+        if (parent.is_empty())
+            parent.set_empty_object(field);
+        else if (!parent.is_object())
+            throw std::runtime_error("begin_object() on non-object parent");
 
-        parent.set(field, JsonValue::object());
+        parent.set_empty_object(field);
         node_stack.push_back(parent.get(field));
     }
 
     void JSONSerializationContext::begin_object()
     {
-        JsonValue &parent = node_stack.back();
+        auto &parent = node_stack.back();
 
-        if (parent.is_null())
-            parent.make_array();
+        if (parent.is_empty())
+            parent.set_empty_array(""); // or consider making empty array here
 
-        parent.append(JsonValue::object());
+        if (!parent.is_array())
+            throw std::runtime_error("begin_object() on non-array parent");
+
+        parent.append(nlohmann::json::object());
         node_stack.push_back(parent.get(parent.size() - 1));
     }
 
@@ -152,23 +147,29 @@ namespace Engine
 
     void JSONSerializationContext::begin_array(const std::string &field)
     {
-        JsonValue &parent = node_stack.back();
+        auto &parent = node_stack.back();
 
-        if (parent.is_null())
-            parent.make_object();
+        if (parent.is_empty())
+            parent.set_empty_object(field);
 
-        parent.set(field, JsonValue::array());
+        if (!parent.is_object())
+            throw std::runtime_error("begin_array() on non-object parent");
+
+        parent.set_empty_array(field);
         node_stack.push_back(parent.get(field));
     }
 
     void JSONSerializationContext::begin_array()
     {
-        JsonValue &parent = node_stack.back();
+        auto &parent = node_stack.back();
 
-        if (parent.is_null())
-            parent.make_array();
+        if (parent.is_empty())
+            parent.set_empty_array("");
 
-        parent.append(JsonValue::array());
+        if (!parent.is_array())
+            throw std::runtime_error("begin_array() on non-array parent");
+
+        parent.append(nlohmann::json::array());
         node_stack.push_back(parent.get(parent.size() - 1));
     }
 
