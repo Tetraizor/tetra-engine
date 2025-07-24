@@ -10,7 +10,7 @@ namespace Engine
         return registry;
     }
 
-    std::unique_ptr<Component> ComponentRegistry::create(const std::string &name) const
+    std::unique_ptr<Component> ComponentRegistry::instantiate_raw(const std::string &name) const
     {
         auto it = creators.find(name);
         if (it != creators.end())

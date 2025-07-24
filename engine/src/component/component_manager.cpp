@@ -31,7 +31,7 @@ namespace Engine
         if (it == component_list.end())
             return nullptr;
 
-        return it->second.get();
+        return it->second;
     }
 
     ComponentID ComponentManager::allocate_id()
@@ -79,7 +79,7 @@ namespace Engine
 
             std::string component_type = ctx.read_string("component_type");
 
-            std::unique_ptr<Component> component = ComponentRegistry::instance().create(component_type);
+            std::unique_ptr<Component> component = ComponentRegistry::instance().instantiate_raw(component_type);
             if (!component)
                 throw std::runtime_error("Unknown component type: " + component_type);
 

@@ -15,15 +15,29 @@ namespace Engine
     /**
      * @brief Central registry for component types, enabling creation by name and lookup of type names.
      */
+
     class ComponentRegistry
     {
-    public:
-        using create_func = std::function<std::unique_ptr<Component>()>;
+        friend class ComponentManager;
 
+    public:
         /**
          * @brief Get the singleton instance of the registry.
          */
         static ComponentRegistry &instance();
+
+        /**
+         * @brief Get the registered name for a component instance.
+         * @param comp Pointer to a component instance.
+         * @return The registered string name, or empty string if not registered.
+         */
+        std::string get_name(const Component *component) const;
+
+        /**
+         * @brief Get the names for all registered components with types.
+         * @return Unordered list with types as keys and their names as values.
+         */
+        std::unordered_map<std::type_index, std::string> get_type_names() const { return type_names; }
 
         /**
          * @brief Register a component type T with a unique string name.
@@ -45,13 +59,16 @@ namespace Engine
             type_names[type_index] = name;
         }
 
+    private:
+        using create_func = std::function<std::unique_ptr<Component>()>;
+
         /**
          * @brief Create a new component instance by type.
          * @tparam T Concrete component type, must be registered.
          * @return unique_ptr to the new Component, or nullptr if type not registered.
          */
         template <typename T>
-        std::unique_ptr<Component> create() const
+        std::unique_ptr<Component> instantiate_raw() const
         {
             static_assert(std::is_base_of<Component, T>::value, "T must derive from Component");
 
@@ -84,7 +101,7 @@ namespace Engine
          * @return unique_ptr to the new T, or nullptr if type not registered.
          */
         template <typename T>
-        std::unique_ptr<T> create_typed() const
+        std::unique_ptr<T> instantiate_raw_typed() const
         {
             static_assert(std::is_base_of<Component, T>::value, "T must derive from Component");
 
@@ -98,7 +115,7 @@ namespace Engine
          * @param name The registered name of the component type.
          * @return unique_ptr to the new Component, or nullptr if name not found.
          */
-        std::unique_ptr<Component> create(const std::string &name) const;
+        std::unique_ptr<Component> instantiate_raw(const std::string &name) const;
 
         /**
          * @brief Get the registered name for a component type T.
@@ -119,16 +136,6 @@ namespace Engine
             return {};
         }
 
-        /**
-         * @brief Get the registered name for a component instance.
-         * @param comp Pointer to a component instance.
-         * @return The registered string name, or empty string if not registered.
-         */
-        std::string get_name(const Component *component) const;
-
-        std::unordered_map<std::type_index, std::string> get_type_names() const { return type_names; }
-
-    private:
         ComponentRegistry() = default;
         ~ComponentRegistry() = default;
 

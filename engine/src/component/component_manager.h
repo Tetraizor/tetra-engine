@@ -34,7 +34,7 @@ namespace Engine
         ComponentID allocate_id();
 
     private:
-        std::unordered_map<ComponentID, std::unique_ptr<Component>> component_list;
+        std::unordered_map<ComponentID, Component *> component_list;
 
         std::vector<uint32_t> generations;
         std::vector<uint32_t> free_indices;

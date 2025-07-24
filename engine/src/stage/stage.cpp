@@ -80,12 +80,17 @@ namespace Engine
     {
         std::cout << "[Stage] Starting to deserialize..." << std::endl;
 
-        std::cout << "[Stage] Stage name: " << ctx.read_string("stage_name") << std::endl;
+        std::cout << "[Stage] Stage name: " << ctx.read_string("name") << std::endl;
         guid = ctx.read_guid("guid");
         name = ctx.read_string("name");
 
+        ctx.begin_object("entity_manager");
         entity_manager->deserialize(ctx);
+        ctx.end_object();
+
+        ctx.begin_object("component_manager");
         component_manager->deserialize(ctx);
+        ctx.end_object();
 
         std::cout << "[Stage] Deserializing finished for " << get_guid().to_string() << std::endl;
     }
