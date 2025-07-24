@@ -1,5 +1,6 @@
 #include "project_manager/project_manager.h"
-#include "serialization/json/json_utils.h"
+#include "serialization/json/json_value.h"
+#include "serialization/json/json_document.h"
 #include "serialization/json/json_serialization_context.h"
 #include "utils/io.h"
 
@@ -24,24 +25,23 @@ namespace Editor
 
         std::string project_file_contents = contents_opt.value();
 
-        Engine::Serialization::Json::JsonDocument doc;
+        Engine::Serialization::Json::JsonDocument doc(project_file_contents);
 
-        doc.from_text(project_file_contents);
-        auto root = doc.root();
+        auto root = doc.get_root();
 
         if (
-            !root.has_key("project_name") ||
-            !root.has_key("engine_version") ||
-            !root.has_key("project_definition_version"))
+            !root.has("project_name") ||
+            !root.has("engine_version") ||
+            !root.has("project_definition_version"))
         {
             throw std::runtime_error("Missing required field(s) in project file!");
         }
 
-        project_name = root.get("project_name").get_string().value();
+        project_name = root.get("project_name").as<std::string>().value();
 
-        std::string engine_version = root.get("engine_version").get_string().value();
-        std::string project_definition_version = root.get("project_definition_version").get_string().value();
-        std::string last_open_stage = root.get("last_open_stage").get_string().value();
+        std::string engine_version = root.get("engine_version").as<std::string>().value();
+        std::string project_definition_version = root.get("project_definition_version").as<std::string>().value();
+        std::string last_open_stage = root.get("last_open_stage").as<std::string>().value();
 
         auto absolute_stage_path = get_project_path() / last_open_stage;
 
@@ -66,10 +66,9 @@ namespace Editor
 
         std::string contents = scene_contents_opt.value();
 
-        Engine::Serialization::Json::JsonDocument doc;
-        doc.from_text(contents);
+        Engine::Serialization::Json::JsonDocument doc(contents);
 
-        auto root = doc.root();
+        auto root = doc.get_root();
 
         std::unique_ptr<Engine::Stage> stage_ptr = std::make_unique<Engine::Stage>();
         Engine::JSONSerializationContext ctx(stage_ptr.get(), std::move(root));

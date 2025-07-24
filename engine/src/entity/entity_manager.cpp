@@ -115,6 +115,9 @@ namespace Engine
         generations.clear();
         free_indices.clear();
 
+        std::cout << "Reading name: " << ctx.read_string("name") << std::endl;
+        std::cout << "Reading test: " << ctx.read_string("test") << std::endl;
+
         ctx.begin_array("entities");
 
         for (int i = 0; i < ctx.array_size(); i++)

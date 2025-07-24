@@ -1,15 +1,7 @@
+#include "editor.h"
+
 #include <iostream>
 #include <memory>
-
-#include "core.h"
-#include "stage/stage.h"
-#include "viewport/viewport.h"
-#include "data/guid.h"
-
-#include "component/transform_component.h"
-#include "component/component_registry.h"
-
-#include "project_manager/project_manager.h"
 
 int main(int argc, char **argv)
 {
@@ -41,7 +33,7 @@ int main(int argc, char **argv)
 
             try
             {
-                Editor::ProjectManager project_manager(args.at(1));
+                Editor::Editor editor(args.at(1));
             }
             catch (const std::exception &e)
             {
@@ -56,30 +48,6 @@ int main(int argc, char **argv)
             std::cout << "[Engine] Program launched with invalid arguments, exiting..." << std::endl;
             return -1;
         }
-
-        Engine::Core core;
-
-        if (!core.initialize())
-        {
-            std::cerr << "Failed to initialize Core!" << std::endl;
-            return -1;
-        }
-
-        auto stage = core.createStage(false);
-        auto viewport = std::make_shared<Engine::Viewport>("Engine Window", 1280, 720);
-
-        std::unique_ptr<Engine::TransformComponent> transform = Engine::ComponentRegistry::instance().create_typed<Engine::TransformComponent>();
-        std::cout << "X: " << transform->x << std::endl;
-
-        if (!viewport->initialize())
-        {
-            std::cerr << "Failed to initialize viewport!" << std::endl;
-        }
-
-        stage->attach_viewport(viewport);
-
-        core.run();
-        core.shutdown();
     }
     catch (const std::exception &e)
     {
