@@ -10,7 +10,7 @@ using namespace Engine::Serialization::Json;
 TEST(JsonDocumentTest, RootIsObjectByDefault)
 {
     JsonDocument doc;
-    JsonValue &root = doc.get_root();
+    JsonValue root = doc.get_root();
 
     EXPECT_TRUE(root.is_object());
     EXPECT_FALSE(root.is_array());
@@ -48,7 +48,7 @@ TEST(JsonDocumentTest, ToTextIndentation)
 TEST(JsonValueTest, ObjectSetGetAndHasKey)
 {
     JsonDocument doc;
-    JsonValue &root = doc.get_root();
+    JsonValue root = doc.get_root();
 
     EXPECT_FALSE(root.has("foo"));
 
@@ -132,7 +132,7 @@ TEST(JsonValueTest, MakeObjectAndMakeArrayOverwrite)
 TEST(JsonValueTest, AccessNonExistentKeysThrowsOrReturnsNull)
 {
     JsonDocument doc;
-    JsonValue &root = doc.get_root();
+    JsonValue root = doc.get_root();
 
     EXPECT_FALSE(root.has("missing_key"));
 
@@ -146,7 +146,7 @@ TEST(JsonValueTest, AccessNonExistentKeysThrowsOrReturnsNull)
 TEST(JsonValueTest, NestedObjectAndArrayMutation)
 {
     JsonDocument doc;
-    JsonValue &root = doc.get_root();
+    JsonValue root = doc.get_root();
 
     root.set_empty_object("level1");
     JsonValue level1 = root.get("level1");
@@ -175,7 +175,7 @@ TEST(JsonValueTest, NestedObjectAndArrayMutation)
 TEST(JsonValueTest, CopyConstructorAndAssignment)
 {
     JsonDocument doc;
-    JsonValue &root = doc.get_root();
+    JsonValue root = doc.get_root();
 
     root.set_empty_object("obj");
     JsonValue obj = root.get("obj");
@@ -195,7 +195,7 @@ TEST(JsonValueTest, CopyConstructorAndAssignment)
 TEST(JsonValueTest, ConstJsonValueAccess)
 {
     JsonDocument doc(R"({"foo": 123, "bar": [1,2,3]})");
-    const JsonValue &root = doc.get_root();
+    const JsonValue root = doc.get_root();
 
     EXPECT_TRUE(root.has("foo"));
     EXPECT_EQ(root.get("foo").as<int>(), std::optional<int>(123));

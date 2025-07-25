@@ -21,7 +21,7 @@ namespace Editor
 
         auto contents_opt = Engine::Utils::IO::read_file_contents(project_file);
         if (!contents_opt.has_value())
-            throw std::exception("Project file not found!");
+            throw std::runtime_error("Project file not found!");
 
         std::string project_file_contents = contents_opt.value();
 

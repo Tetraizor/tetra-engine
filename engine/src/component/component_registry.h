@@ -105,9 +105,11 @@ namespace Engine
         {
             static_assert(std::is_base_of<Component, T>::value, "T must derive from Component");
 
-            std::unique_ptr<Component> base = create<T>();
+            std::unique_ptr<Component> base = instantiate_raw<T>();
 
-            return std::unique_ptr<T>(static_cast<T *>(base.release()));
+            T *casted = static_cast<T *>(base.get());
+
+            return std::unique_ptr<T>(casted);
         }
 
         /**
