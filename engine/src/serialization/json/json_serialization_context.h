@@ -30,7 +30,7 @@ namespace Engine
          * @param stage Pointer to the Stage being deserialized into.
          * @param input The JSON object to read from.
          */
-        JSONSerializationContext(Stage *stage, Serialization::Json::JsonValue input);
+        JSONSerializationContext(Stage *stage, JsonDocument &document);
 
         ~JSONSerializationContext() override;
 
@@ -63,16 +63,27 @@ namespace Engine
         void end_array() override;
         size_t array_size() const override;
 
+        template <typename T>
+        void append(T item) { get_current().append<T>(item); }
+
+        // --- Array Readers ---
+        uint32_t read_UInt(const int index) override;
+        int32_t read_int(const int index) override;
+        float read_float(const int index) override;
+        std::string read_string(const int index) override;
+        GUID read_guid(const int index) override;
+
         // --- Helpers ---
         Stage *get_stage() override { return stage; }
-        const JsonValue &current() const { return node_stack.back(); }
+        JsonValue get_current() const { return node_stack.back(); }
+        JsonValue get_root() const { document.get_root(); }
 
     private:
         Stage *stage = nullptr;
         bool reading = false;
 
+        JsonDocument &document_ref = document;
         JsonDocument document;
-        JsonValue read_root;
 
         std::vector<JsonValue> node_stack;
 

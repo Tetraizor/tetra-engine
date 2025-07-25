@@ -128,6 +128,8 @@ namespace Engine::Serialization::Json
             return json_ptr != nullptr;
         }
 
+        std::string to_text(bool pretty = 0) const;
+
         void clear();
 
     private:

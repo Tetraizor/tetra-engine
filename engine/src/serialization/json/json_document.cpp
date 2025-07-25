@@ -19,7 +19,7 @@ namespace Engine::Serialization::Json
 
     const std::string JsonDocument::to_text(bool pretty) const
     {
-        return root_ptr->dump(pretty ? 4 : -1);
+        return get_root().to_text(pretty);
     }
 
     JsonValue::JsonValue(nlohmann::json *json_ptr) : json_ptr(json_ptr) {}

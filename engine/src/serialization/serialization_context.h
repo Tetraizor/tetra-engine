@@ -27,6 +27,12 @@ namespace Engine
         virtual void write_string(const std::string &value, const std::string &field) = 0;
         virtual void write_guid(const GUID &value, const std::string &field) = 0;
 
+        virtual void write_UInt(uint32_t value) = 0;
+        virtual void write_int(int32_t value) = 0;
+        virtual void write_float(float value) = 0;
+        virtual void write_string(const std::string &value) = 0;
+        virtual void write_guid(const GUID &value) = 0;
+
         // --- Reading (Deserialization) ---
 
         virtual uint32_t read_UInt(const std::string &field) = 0;
@@ -34,6 +40,12 @@ namespace Engine
         virtual float read_float(const std::string &field) = 0;
         virtual std::string read_string(const std::string &field) = 0;
         virtual GUID read_guid(const std::string &field) = 0;
+
+        virtual uint32_t read_UInt(const int index) = 0;
+        virtual int32_t read_int(const int index) = 0;
+        virtual float read_float(const int index) = 0;
+        virtual std::string read_string(const int index) = 0;
+        virtual GUID read_guid(const int index) = 0;
 
         // --- Object and Array Scoping
 

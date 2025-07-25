@@ -118,4 +118,9 @@ namespace Engine::Serialization::Json
 
         json_ptr->clear();
     }
+
+    std::string JsonValue::to_text(bool pretty) const
+    {
+        return json_ptr->dump(pretty ? 4 : 0);
+    }
 }

@@ -11,21 +11,22 @@ namespace Engine
     using Engine::Serialization::Json::JsonValue;
 
     JSONSerializationContext::JSONSerializationContext(Stage *stage)
-        : stage(stage), reading(false), document(), read_root(document.get_root())
+        : stage(stage), reading(false), document()
     {
+        node_stack.emplace_back(document.get_root());
     }
 
-    JSONSerializationContext::JSONSerializationContext(Stage *stage, JsonValue input)
-        : stage(stage), reading(true), document(), read_root(std::move(input))
+    JSONSerializationContext::JSONSerializationContext(Stage *stage, JsonDocument &document)
+        : stage(stage), reading(true), document_ref(document)
     {
-        node_stack.emplace_back(read_root);
+        node_stack.emplace_back(document.get_root());
     }
 
     JSONSerializationContext::~JSONSerializationContext() = default;
 
     JsonValue JSONSerializationContext::get_result()
     {
-        return document.get_root();
+        return document_ref.get_root();
     }
 
     // Writing

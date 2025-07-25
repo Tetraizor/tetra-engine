@@ -24,19 +24,28 @@ protected:
 
 TEST_F(JsonSerializationContextTest, WriteUInt_WritesValueToJson)
 {
-    JSONSerializationContext context(stage);
+    JSONSerializationContext ctx(stage);
 
-    context.begin_object(""); // start root object scope
+    ctx.write_UInt(35u, "uint_test");
 
-    context.write_UInt(42, "my_uint");
+    ctx.begin_object("child_test");
 
-    context.end_object();
+    ctx.write_float(24.353f, "float_test");
 
-    auto root = context.get_result();
+    ctx.end_object();
 
-    // root should be an object with "my_uint" field = 42
+    ctx.write_string("hi :)", "string_test");
+
+    ctx.begin_array("nums");
+    ctx.append<int>(3);
+    ctx.append<int>(6);
+    ctx.append<int>(9);
+
+    auto root = ctx.get_result();
+    std::cout << root.to_text(true);
+
     ASSERT_TRUE(root.is_object());
-    EXPECT_EQ(root.get("my_uint").as<int>().value(), 42);
+    EXPECT_EQ(root.get("uint_test").as<uint32_t>().value(), 35u);
 }
 
 TEST_F(JsonSerializationContextTest, WriteUInt_OnNonObjectParent_Throws)
