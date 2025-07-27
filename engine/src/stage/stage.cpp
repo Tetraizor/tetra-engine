@@ -80,10 +80,10 @@ namespace Engine
     void Stage::deserialize(SerializationContext &ctx)
     {
         std::cout << "[Stage] Starting to deserialize..." << std::endl;
-
         std::cout << "[Stage] Stage name: " << ctx.read<std::string>("name") << std::endl;
 
-        GUID guid = GUID::from_string(ctx.read<std::string>("guid"));
+        std::string guid_raw = ctx.read<std::string>("guid");
+        guid = GUID::from_string(guid_raw);
 
         name = ctx.read<std::string>("name");
 

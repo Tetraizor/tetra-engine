@@ -73,6 +73,16 @@ namespace Editor
 
         stage_ptr->deserialize(ctx);
 
+        for (int i = 0; i < 3; i++)
+        {
+            stage_ptr->get_entity_manager().create_entity(std::string("Entity") + std::to_string(i));
+            std::cout << i << ": " << stage_ptr->get_entity_manager().get_entity_list()->size() << std::endl;
+        }
+
+        Engine::Serialization::JSONSerializationContext serialize_ctx(stage_ptr.get());
+        stage_ptr->serialize(serialize_ctx);
+        std::cout << serialize_ctx.get_root().to_text() << std::endl;
+
         loaded_stages.emplace(stage_ptr->get_guid(), std::move(stage_ptr));
     }
 

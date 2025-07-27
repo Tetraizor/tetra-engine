@@ -15,10 +15,7 @@ namespace Engine
 
         static const ComponentID Invalid;
 
-        bool is_valid() const
-        {
-            return *this != Invalid;
-        }
+        bool is_valid() const { return *this != Invalid; }
 
         bool operator==(const ComponentID &other) const
         {
@@ -30,17 +27,8 @@ namespace Engine
             return !(*this == other);
         }
 
-        void serialize(Engine::Serialization::SerializationContext &ctx) const
-        {
-            ctx.write("index", index);
-            ctx.write("generation", generation);
-        }
-
-        void deserialize(Engine::Serialization::SerializationContext &ctx)
-        {
-            index = ctx.read<uint32_t>("index");
-            generation = ctx.read<uint32_t>("generation");
-        }
+        void serialize(Engine::Serialization::SerializationContext &ctx) const;
+        void deserialize(Engine::Serialization::SerializationContext &ctx);
     };
 
     inline std::ostream &operator<<(std::ostream &os, const ComponentID &id)

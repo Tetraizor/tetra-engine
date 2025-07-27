@@ -28,6 +28,8 @@ namespace Engine
         void destroy_component(const ComponentID id);
         Component *get_component_by_id(const ComponentID id) const;
 
+        void resolve_references();
+
         void serialize(Serialization::SerializationContext &ctx) const override;
         void deserialize(Serialization::SerializationContext &ctx) override;
 

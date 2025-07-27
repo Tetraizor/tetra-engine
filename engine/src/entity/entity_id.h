@@ -31,7 +31,6 @@ namespace Engine
         }
 
         void serialize(Serialization::SerializationContext &ctx) const;
-
         void deserialize(Serialization::SerializationContext &ctx);
     };
 

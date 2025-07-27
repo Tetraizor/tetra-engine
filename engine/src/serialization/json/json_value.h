@@ -128,7 +128,7 @@ namespace Engine::Serialization::Json
             return json_ptr != nullptr;
         }
 
-        std::string to_text(bool pretty = 0) const;
+        std::string to_text(bool pretty = true) const;
 
         std::vector<std::string> get_keys() const;
 

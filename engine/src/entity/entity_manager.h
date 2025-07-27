@@ -42,6 +42,8 @@ namespace Engine
          */
         Entity *get_entity_by_id(const EntityID &id) const;
 
+        std::unordered_map<EntityID, std::unique_ptr<Entity>> *get_entity_list() { return &entity_list; }
+
         void setup();
         void update(float delta_time);
 
