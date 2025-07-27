@@ -61,10 +61,11 @@ namespace Engine::Serialization::Json
 
         bool is_empty() const;
 
-        JsonValue set_empty_object(const std::string &field);
-        JsonValue set_empty_array(const std::string &field);
+        JsonValue create_empty_object(const std::string &field);
+        JsonValue create_empty_object();
 
-        bool remove(const std::string &field);
+        JsonValue create_empty_array(const std::string &field);
+        JsonValue create_empty_array();
 
         JsonValue get(const std::string &field) const;
         JsonValue get(const int index) const;
@@ -86,11 +87,10 @@ namespace Engine::Serialization::Json
         }
 
         /**
-         * @brief Returns the size of the JSON array.
+         * @brief Returns the size of the JSON array/object.
          *
-         * @return The number of elements in the JSON array.
+         * @return The number of elements in the JSON array/object.
          * @throws std::runtime_error If the underlying JSON pointer is null.
-         * @note If the JSON value is not an array, returns -1.
          */
         size_t size() const;
 
@@ -128,7 +128,12 @@ namespace Engine::Serialization::Json
             return json_ptr != nullptr;
         }
 
+        std::string to_text(bool pretty = 0) const;
+
+        std::vector<std::string> get_keys() const;
+
         void clear();
+        bool remove(const std::string &field);
 
     private:
         JsonValue(nlohmann::json *json_ptr);

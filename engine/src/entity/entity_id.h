@@ -30,9 +30,9 @@ namespace Engine
             return !(*this == other);
         }
 
-        void serialize(SerializationContext &ctx) const;
+        void serialize(Serialization::SerializationContext &ctx) const;
 
-        void deserialize(SerializationContext &ctx);
+        void deserialize(Serialization::SerializationContext &ctx);
     };
 
     inline std::ostream &operator<<(std::ostream &os, const EntityID &id)

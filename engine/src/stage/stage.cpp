@@ -1,4 +1,5 @@
 #include "stage.h"
+
 #include "viewport/viewport.h"
 #include "entity/entity.h"
 #include "component/component.h"
@@ -80,15 +81,17 @@ namespace Engine
     {
         std::cout << "[Stage] Starting to deserialize..." << std::endl;
 
-        std::cout << "[Stage] Stage name: " << ctx.read_string("name") << std::endl;
-        guid = ctx.read_guid("guid");
-        name = ctx.read_string("name");
+        std::cout << "[Stage] Stage name: " << ctx.read<std::string>("name") << std::endl;
 
-        ctx.begin_object("entity_manager");
+        GUID guid = GUID::from_string(ctx.read<std::string>("guid"));
+
+        name = ctx.read<std::string>("name");
+
+        ctx.begin_object_key("entity_manager");
         entity_manager->deserialize(ctx);
         ctx.end_object();
 
-        ctx.begin_object("component_manager");
+        ctx.begin_object_key("component_manager");
         component_manager->deserialize(ctx);
         ctx.end_object();
 

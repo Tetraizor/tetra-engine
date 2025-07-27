@@ -12,7 +12,7 @@ namespace Engine
     class Entity;
     class Stage;
 
-    class EntityManager : public Serializable
+    class EntityManager : public Serialization::Serializable
     {
     public:
         EntityManager(Stage *owner_stage_ptr);
@@ -46,8 +46,8 @@ namespace Engine
         void update(float delta_time);
 
         // Serialization
-        void serialize(SerializationContext &ctx) const override;
-        void deserialize(SerializationContext &ctx) override;
+        void serialize(Serialization::SerializationContext &ctx) const override;
+        void deserialize(Serialization::SerializationContext &ctx) override;
 
     private:
         std::unordered_map<EntityID, std::unique_ptr<Entity>> entity_list;

@@ -52,9 +52,9 @@ namespace Engine
         return {index, generations[index]};
     }
 
-    void ComponentManager::serialize(SerializationContext &ctx) const
+    void ComponentManager::serialize(Serialization::SerializationContext &ctx) const
     {
-        ctx.begin_array("components");
+        ctx.begin_array_key("components");
 
         for (const auto &[id, component_ptr] : component_list)
         {
@@ -64,20 +64,20 @@ namespace Engine
         ctx.end_array();
     }
 
-    void ComponentManager::deserialize(SerializationContext &ctx)
+    void ComponentManager::deserialize(Serialization::SerializationContext &ctx)
     {
-        ctx.begin_array("components");
+        ctx.begin_array_key("components");
 
-        for (int i = 0; i < ctx.array_size(); i++)
+        for (int i = 0; i < ctx.size(); i++)
         {
-            ctx.begin_object("component_id");
+            ctx.begin_object_key("component_id");
 
             EntityID owner_id;
             owner_id.serialize(ctx);
 
             ctx.end_object();
 
-            std::string component_type = ctx.read_string("component_type");
+            std::string component_type = ctx.read<std::string>("component_type");
 
             std::unique_ptr<Component> component = ComponentRegistry::instance().instantiate_raw(component_type);
             if (!component)

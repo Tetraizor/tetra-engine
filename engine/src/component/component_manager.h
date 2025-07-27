@@ -14,7 +14,7 @@ namespace Engine
 {
     class Component;
 
-    class ComponentManager : public Serializable
+    class ComponentManager : public Serialization::Serializable
     {
         friend class Stage;
 
@@ -28,8 +28,8 @@ namespace Engine
         void destroy_component(const ComponentID id);
         Component *get_component_by_id(const ComponentID id) const;
 
-        void serialize(SerializationContext &ctx) const override;
-        void deserialize(SerializationContext &ctx) override;
+        void serialize(Serialization::SerializationContext &ctx) const override;
+        void deserialize(Serialization::SerializationContext &ctx) override;
 
         ComponentID allocate_id();
 

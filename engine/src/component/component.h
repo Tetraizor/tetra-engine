@@ -8,7 +8,7 @@ namespace Engine
     class ComponentRegistry;
     class Entity;
 
-    class Component : public Serializable
+    class Component : public Serialization::Serializable
     {
         friend class Entity;
         friend class ComponentManager;

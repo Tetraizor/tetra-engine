@@ -14,7 +14,7 @@ namespace Engine
     class Component;
     class EntityManager;
 
-    class Entity : public Serializable
+    class Entity : public Serialization::Serializable
     {
         friend class EntityManager;
 
@@ -86,8 +86,8 @@ namespace Engine
         void set_parent(const EntityID &parent);
 
         // Serialization
-        void serialize(SerializationContext &ctx) const override;
-        void deserialize(SerializationContext &ctx) override;
+        void serialize(Serialization::SerializationContext &ctx) const override;
+        void deserialize(Serialization::SerializationContext &ctx) override;
 
         // Core
         void update(float deltaTime);

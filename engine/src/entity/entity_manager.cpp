@@ -97,32 +97,34 @@ namespace Engine
     }
 
     // Serialization
-    void EntityManager::serialize(SerializationContext &ctx) const
+    void EntityManager::serialize(Serialization::SerializationContext &ctx) const
     {
-        ctx.begin_array("entities");
+        ctx.begin_array_key("entities");
 
         for (const auto &[id, entity_ptr] : entity_list)
         {
+            ctx.begin_object_push();
             entity_ptr->serialize(ctx);
+            ctx.end_object();
         }
 
         ctx.end_array();
     }
 
-    void EntityManager::deserialize(SerializationContext &ctx)
+    void EntityManager::deserialize(Serialization::SerializationContext &ctx)
     {
         entity_list.clear();
         generations.clear();
         free_indices.clear();
 
-        std::cout << "Reading name: " << ctx.read_string("name") << std::endl;
-        std::cout << "Reading test: " << ctx.read_string("test") << std::endl;
+        std::cout << "Reading name: " << ctx.read<std::string>("name") << std::endl;
+        std::cout << "Reading test: " << ctx.read<std::string>("test") << std::endl;
 
-        ctx.begin_array("entities");
+        ctx.begin_array_key("entities");
 
-        for (int i = 0; i < ctx.array_size(); i++)
+        for (int i = 0; i < ctx.size(); i++)
         {
-            ctx.begin_object();
+            ctx.begin_object_index(i);
 
             auto entity = std::make_unique<Entity>("");
             entity->deserialize(ctx);

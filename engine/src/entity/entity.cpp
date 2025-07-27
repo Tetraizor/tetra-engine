@@ -67,28 +67,19 @@ namespace Engine
     }
 
     // Serialization
-    void Entity::serialize(SerializationContext &ctx) const
+    void Entity::serialize(Serialization::SerializationContext &ctx) const
     {
-        ctx.begin_object();
-
-        ctx.write_UInt(id.index, "id_index");
-        ctx.write_UInt(id.generation, "id_generation");
-        ctx.write_string(name, "name");
-
-        for (size_t i = 0; i < components.size(); i++)
-        {
-            components[i]->serialize(ctx);
-        }
-
-        ctx.end_object();
+        ctx.write("id_index", id.index);
+        ctx.write("id_generation", id.generation);
+        ctx.write("name", name);
     }
 
-    void Entity::deserialize(SerializationContext &ctx)
+    void Entity::deserialize(Serialization::SerializationContext &ctx)
     {
-        uint32_t id_index = ctx.read_UInt("id_index");
-        uint32_t id_generation = ctx.read_UInt("id_generation");
+        uint32_t id_index = ctx.read<int32_t>("id_index");
+        uint32_t id_generation = ctx.read<int32_t>("id_generation");
 
         id = {id_index, id_generation};
-        name = ctx.read_string("name");
+        name = ctx.read<std::string>("name");
     }
 }

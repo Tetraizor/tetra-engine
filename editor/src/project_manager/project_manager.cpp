@@ -68,10 +68,8 @@ namespace Editor
 
         Engine::Serialization::Json::JsonDocument doc(contents);
 
-        auto root = doc.get_root();
-
         std::unique_ptr<Engine::Stage> stage_ptr = std::make_unique<Engine::Stage>();
-        Engine::JSONSerializationContext ctx(stage_ptr.get(), std::move(root));
+        Engine::Serialization::JSONSerializationContext ctx(stage_ptr.get(), doc);
 
         stage_ptr->deserialize(ctx);
 

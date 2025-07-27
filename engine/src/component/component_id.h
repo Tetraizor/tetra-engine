@@ -30,16 +30,16 @@ namespace Engine
             return !(*this == other);
         }
 
-        void serialize(SerializationContext &ctx) const
+        void serialize(Engine::Serialization::SerializationContext &ctx) const
         {
-            ctx.write_UInt(index, "index");
-            ctx.write_UInt(generation, "generation");
+            ctx.write("index", index);
+            ctx.write("generation", generation);
         }
 
-        void deserialize(SerializationContext &ctx)
+        void deserialize(Engine::Serialization::SerializationContext &ctx)
         {
-            index = ctx.read_UInt("index");
-            generation = ctx.read_UInt("generation");
+            index = ctx.read<uint32_t>("index");
+            generation = ctx.read<uint32_t>("generation");
         }
     };
 

@@ -6,12 +6,19 @@
 #include "serialization/serializable.h"
 #include "data/guid.h"
 
+namespace Engine::Serialization
+{
+    class SerializationContext;
+}
+
 namespace Engine
 {
+    using Engine::Serialization::SerializationContext;
+
     class Viewport;
     class ComponentManager;
 
-    class Stage : public Serializable
+    class Stage : public Engine::Serialization::Serializable
     {
     public:
         explicit Stage(bool headless = false);

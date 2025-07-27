@@ -52,8 +52,8 @@ TEST(JsonValueTest, ObjectSetGetAndHasKey)
 
     EXPECT_FALSE(root.has("foo"));
 
-    root.set_empty_object("inner");
-    root.get("inner").set_empty_array("foo");
+    root.create_empty_object("inner");
+    root.get("inner").create_empty_array("foo");
 
     ASSERT_TRUE(root.has("inner"));
     ASSERT_FALSE(root.has("foo"));
@@ -100,8 +100,8 @@ TEST(JsonValueTest, NullObjectArrayFactories)
 {
     JsonDocument doc;
 
-    JsonValue obj = doc.get_root().set_empty_object("obj");
-    JsonValue arr = doc.get_root().set_empty_array("arr");
+    JsonValue obj = doc.get_root().create_empty_object("obj");
+    JsonValue arr = doc.get_root().create_empty_array("arr");
 
     EXPECT_TRUE(obj.is_empty());
     EXPECT_TRUE(obj.is_object());
@@ -117,15 +117,15 @@ TEST(JsonValueTest, MakeObjectAndMakeArrayOverwrite)
 {
     JsonDocument doc;
 
-    JsonValue obj = doc.get_root().set_empty_object("obj");
+    JsonValue obj = doc.get_root().create_empty_object("obj");
 
     EXPECT_TRUE(obj.is_object());
 
-    doc.get_root().set_empty_array("obj");
+    doc.get_root().create_empty_array("obj");
     EXPECT_TRUE(obj.is_array());
     EXPECT_EQ(obj.size(), 0u);
 
-    doc.get_root().set_empty_array("obj");
+    doc.get_root().create_empty_array("obj");
     EXPECT_FALSE(obj.is_object());
 }
 
@@ -148,10 +148,10 @@ TEST(JsonValueTest, NestedObjectAndArrayMutation)
     JsonDocument doc;
     JsonValue root = doc.get_root();
 
-    root.set_empty_object("level1");
+    root.create_empty_object("level1");
     JsonValue level1 = root.get("level1");
 
-    level1.set_empty_array("level2_array");
+    level1.create_empty_array("level2_array");
     JsonValue level2_array = level1.get("level2_array");
 
     // Append objects to array
@@ -177,7 +177,7 @@ TEST(JsonValueTest, CopyConstructorAndAssignment)
     JsonDocument doc;
     JsonValue root = doc.get_root();
 
-    root.set_empty_object("obj");
+    root.create_empty_object("obj");
     JsonValue obj = root.get("obj");
     obj.set("key", 123);
 
