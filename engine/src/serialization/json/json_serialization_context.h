@@ -130,7 +130,7 @@ namespace Engine::Serialization
 
         JsonValue get_current() const { return node_stack.back(); }
 
-        JsonValue get_root() const { document.get_root(); }
+        JsonValue get_root() const { return document.get_root(); }
 
         std::vector<std::string> get_keys() const override;
 

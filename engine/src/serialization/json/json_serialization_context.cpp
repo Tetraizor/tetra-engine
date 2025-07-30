@@ -437,7 +437,7 @@ namespace Engine::Serialization
         if (index >= parent.size())
             throw std::out_of_range("Index out of bounds of array");
 
-        auto &child = parent.get(index);
+        auto child = parent.get(index);
 
         node_stack.push_back(child);
 
