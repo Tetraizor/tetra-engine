@@ -1,6 +1,8 @@
 // platform/window.h
 #pragma once
 
+#include "graphics/opengl/opengl_context.h"
+
 #include <string>
 #include <memory>
 
@@ -34,9 +36,13 @@ namespace Engine::Platform
 
         bool should_close() const;
 
+        SDL_Window *get_sdl_window() const { return sdl_window; }
+
     private:
         SDL_Window *sdl_window;
         bool close_requested = false;
+
+        std::unique_ptr<Engine::Graphics::OpenGL::OpenGLContext> gl_context;
 
         void handle_event(const SDL_Event &event);
     };

@@ -5,8 +5,6 @@ namespace Engine::Platform
 {
     Window::Window(const Config &config)
     {
-        set_title(config.title);
-
         if (!SDL_Init(SDL_INIT_VIDEO))
         {
             std::cerr << "[Window] SDL_Init failed: " << SDL_GetError() << std::endl;
@@ -25,6 +23,12 @@ namespace Engine::Platform
         {
             std::cerr << "[Window] SDL_CreateWindow failed: " << SDL_GetError() << std::endl;
             throw std::runtime_error("Failed to create SDL window.");
+        }
+
+        gl_context = std::make_unique<Engine::Graphics::OpenGL::OpenGLContext>();
+        if (!gl_context->initialize(sdl_window))
+        {
+            std::cerr << "[Window] Could not initialize OpenGLContext" << std::endl;
         }
     }
 
@@ -50,12 +54,18 @@ namespace Engine::Platform
         while (SDL_PollEvent(&event))
         {
             handle_event(event);
+
+            glClearColor(0.2f, 0.2f, 0.3f, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT);
+
+            swap_buffers();
         }
     }
 
     void Window::swap_buffers()
     {
-        // TODO: Add a rendering context like Vulkan or OpenGL(?)
+        if (gl_context)
+            gl_context->swap_buffers();
     }
 
     int Window::get_width() const

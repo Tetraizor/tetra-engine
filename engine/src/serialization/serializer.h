@@ -73,6 +73,25 @@ namespace Engine::Serialization
 
 #pragma endregion
 
+#pragma region Helper key conversion
+
+    template <typename K>
+    std::string serialize_key(const K &key) { return std::to_string(key); }
+
+    template <>
+    inline std::string serialize_key<std::string>(const std::string &key) { return key; }
+
+    template <typename K>
+    K deserialize_key(const std::string &str);
+
+    template <>
+    inline int deserialize_key<int>(const std::string &str) { return std::stoi(str); }
+
+    template <>
+    inline std::string deserialize_key<std::string>(const std::string &str) { return str; }
+
+#pragma endregion
+
 #pragma region Primitive specializations
 
     template <>
@@ -356,25 +375,6 @@ namespace Engine::Serialization
             ctx.end_object();
         }
     };
-
-#pragma endregion
-
-#pragma region Helper key conversion
-
-    template <typename K>
-    std::string serialize_key(const K &key) { return std::to_string(key); }
-
-    template <>
-    inline std::string serialize_key<std::string>(const std::string &key) { return key; }
-
-    template <typename K>
-    K deserialize_key(const std::string &str);
-
-    template <>
-    inline int deserialize_key<int>(const std::string &str) { return std::stoi(str); }
-
-    template <>
-    inline std::string deserialize_key<std::string>(const std::string &str) { return str; }
 
 #pragma endregion
 }
