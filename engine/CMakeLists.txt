@@ -3,6 +3,17 @@ file(GLOB_RECURSE ALL_ENGINE_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
 )
 
+# === external/ Dependencies ===
+
+# glad1
+add_library(glad STATIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/external/glad/src/glad.c
+)
+
+target_include_directories(glad PUBLIC 
+    ${CMAKE_CURRENT_SOURCE_DIR}/external/glad/include
+)
+
 # Build TetraEngine as shared or static
 if (BUILD_ENGINE_ONLY)
     message(STATUS "Building engine as shared DLL")
@@ -19,10 +30,14 @@ target_include_directories(TetraEngine PUBLIC
     $<INSTALL_INTERFACE:include>
 )
 
+find_package(OpenGL REQUIRED)
+
 # Link dependencies
 target_link_libraries(TetraEngine
     PUBLIC SDL3::SDL3
     PUBLIC nlohmann_json::nlohmann_json
+    PUBLIC glad
+    PUBLIC OpenGL::GL
 )
 
 set_target_output_dirs(TetraEngine)
