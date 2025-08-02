@@ -23,12 +23,17 @@ if (NOT BUILD_ENGINE_ONLY)
             PRIVATE 
             "/WHOLEARCHIVE:TetraEngine"
         )
+    elseif(APPLE)
+        target_link_libraries(Editor
+            PRIVATE
+            "-Wl,-force_load,$<TARGET_FILE:TetraEngine>"
+        )
     else()
         target_link_options(Editor 
             PRIVATE  
             "-Wl,--whole-archive"
             $<TARGET_FILE:TetraEngine>
-            "-Wl,--no-whole-archive"        
+            "-Wl,--no-whole-archive"
         )
     endif()
 else()
