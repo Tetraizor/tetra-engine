@@ -57,15 +57,15 @@ namespace Engine
         }
 
     private:
-        using create_func = std::function<std::unique_ptr<Component>()>;
+        using create_func = std::function<std::shared_ptr<Component>()>;
 
         /**
          * @brief Create a new component instance by type.
          * @tparam T Concrete component type, must be registered.
-         * @return unique_ptr to the new Component, or nullptr if type not registered.
+         * @return shared_ptr to the new Component, or nullptr if type not registered.
          */
         template <typename T>
-        std::unique_ptr<Component> instantiate_raw() const
+        std::shared_ptr<Component> instantiate_raw() const
         {
             static_assert(std::is_base_of<Component, T>::value, "T must derive from Component");
 
@@ -95,26 +95,26 @@ namespace Engine
         /**
          * @brief Create a new component instance by type.
          * @tparam T Concrete component type, must be registered.
-         * @return unique_ptr to the new T, or nullptr if type not registered.
+         * @return shared_ptr to the new T, or nullptr if type not registered.
          */
         template <typename T>
-        std::unique_ptr<T> instantiate_raw_typed() const
+        std::shared_ptr<T> instantiate_raw_typed() const
         {
             static_assert(std::is_base_of<Component, T>::value, "T must derive from Component");
 
-            std::unique_ptr<Component> base = instantiate_raw<T>();
+            std::shared_ptr<Component> base = instantiate_raw<T>();
 
             T *casted = static_cast<T *>(base.get());
 
-            return std::unique_ptr<T>(casted);
+            return std::shared_ptr<T>(casted);
         }
 
         /**
          * @brief Create a new component instance by registered name.
          * @param name The registered name of the component type.
-         * @return unique_ptr to the new Component, or nullptr if name not found.
+         * @return shared_ptr to the new Component, or nullptr if name not found.
          */
-        std::unique_ptr<Component> instantiate_raw(const std::string &name) const;
+        std::shared_ptr<Component> instantiate_raw(const std::string &name) const;
 
         /**
          * @brief Get the registered name for a component type T.

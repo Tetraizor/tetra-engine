@@ -1,6 +1,8 @@
 #include "component_registry.h"
 #include "transform_component.h"
 
+REGISTER_COMPONENT(TransformComponent, Engine::TransformComponent)
+
 namespace Engine
 {
     void TransformComponent::setup()
@@ -14,5 +16,3 @@ namespace Engine
         std::cout << "Transform is alive!" << std::endl;
     }
 }
-
-REGISTER_COMPONENT(TransformComponent, Engine::TransformComponent)

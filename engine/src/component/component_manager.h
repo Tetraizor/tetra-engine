@@ -6,6 +6,8 @@
 #include "entity/entity_id.h"
 #include "serialization/serializable.h"
 
+#include "base/event.h"
+
 #include <iostream>
 #include <unordered_map>
 #include <memory>
@@ -22,6 +24,9 @@ namespace Engine
         ComponentManager(Stage *owner_stage_ptr);
         ~ComponentManager() = default;
 
+        Event<> component_created;
+        Event<> component_destroyed;
+
         template <typename T>
         Component *create_component(EntityID owner_id);
 
@@ -36,7 +41,7 @@ namespace Engine
         ComponentID allocate_id();
 
     private:
-        std::unordered_map<ComponentID, Component *> component_list;
+        std::unordered_map<ComponentID, std::shared_ptr<Component>> component_list;
 
         std::vector<uint32_t> generations;
         std::vector<uint32_t> free_indices;

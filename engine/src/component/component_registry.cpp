@@ -4,7 +4,7 @@
 
 namespace Engine
 {
-    std::unique_ptr<Component> ComponentRegistry::instantiate_raw(const std::string &name) const
+    std::shared_ptr<Component> ComponentRegistry::instantiate_raw(const std::string &name) const
     {
         auto it = creators.find(name);
         if (it != creators.end())

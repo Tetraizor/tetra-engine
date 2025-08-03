@@ -2,13 +2,14 @@
 
 #include "component/component_id.h"
 #include "serialization/serializable.h"
+#include "base/engine_object.h"
 
 namespace Engine
 {
     class ComponentRegistry;
     class Entity;
 
-    class Component : public Serialization::Serializable
+    class Component : public Serialization::Serializable, public EngineObject
     {
         friend class Entity;
         friend class ComponentManager;

@@ -23,6 +23,8 @@ namespace Engine
 
         free_indices.push_back(id.index);
         generations[id.index]++;
+
+        component_destroyed.invoke();
     }
 
     Component *ComponentManager::get_component_by_id(const ComponentID id) const
@@ -31,7 +33,7 @@ namespace Engine
         if (it == component_list.end())
             return nullptr;
 
-        return it->second;
+        return it->second.get();
     }
 
     ComponentID ComponentManager::allocate_id()
@@ -82,7 +84,7 @@ namespace Engine
 
             std::string component_type = ctx.read<std::string>("type");
 
-            std::unique_ptr<Component> component = ComponentRegistry::get_instance().instantiate_raw(component_type);
+            std::shared_ptr<Component> component = ComponentRegistry::get_instance().instantiate_raw(component_type);
             if (!component)
                 throw std::runtime_error("Unknown component type: " + component_type);
 
