@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include "viewport/viewport.h"
+#include "graphics/viewport.h"
 #include "entity/entity_manager.h"
 #include "serialization/serializable.h"
 #include "data/guid.h"
@@ -16,7 +16,6 @@ namespace Engine
 {
     using Engine::Serialization::SerializationContext;
 
-    class Viewport;
     class ComponentManager;
 
     class Stage : public Serialization::Serializable, public RuntimeObjectBase
@@ -30,9 +29,6 @@ namespace Engine
         void render();
         void update(float delta_time);
         void physics_update(float delta_time);
-
-        void attach_viewport(std::shared_ptr<Viewport> viewport);
-        void detach_viewport();
 
         GUID get_guid() const { return guid; }
         std::string get_name() const { return name; }
@@ -53,7 +49,7 @@ namespace Engine
 
         bool headless;
         bool requested_shutdown = false;
-        std::shared_ptr<Viewport> viewport;
+        std::shared_ptr<Graphics::Viewport> viewport;
 
         std::unique_ptr<EntityManager> entity_manager;
         std::unique_ptr<ComponentManager> component_manager;

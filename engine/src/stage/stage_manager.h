@@ -3,11 +3,13 @@
 #include "stage/stage.h"
 #include "data/guid.h"
 
+#include "base/singleton.h"
+
 #include <memory>
 
 namespace Engine
 {
-    class StageManager
+    class StageManager : public Singleton<StageManager>
     {
     public:
         Stage *get_current_stage() { return current_stage.get(); }

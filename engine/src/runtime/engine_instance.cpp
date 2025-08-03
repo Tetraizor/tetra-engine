@@ -8,9 +8,7 @@
 
 namespace Engine
 {
-    EngineInstance::EngineInstance() : stage_manager(),
-                                       asset_manager(),
-                                       project_manager() {}
+    EngineInstance::EngineInstance() {}
 
     int EngineInstance::run(std::vector<std::string> arguments)
     {
@@ -22,7 +20,10 @@ namespace Engine
             std::cout << '\t' << arg << std::endl;
         }
 
-        if (!stage_manager.get_current_stage())
+        StageManager &stage_manager = StageManager::get_instance();
+        Stage *current_stage = stage_manager.get_current_stage();
+
+        if (!current_stage)
         {
             throw std::runtime_error("current_stage is null");
         }
@@ -50,6 +51,7 @@ namespace Engine
             // Wait idly for physics simulation if frame time is too low
             while (accumulator >= fixed_timestep)
             {
+                // TODO: Update physics backend
                 stage_manager.get_current_stage()->physics_update(fixed_timestep);
                 accumulator -= fixed_timestep;
             }
@@ -57,9 +59,7 @@ namespace Engine
             delta_time = frame_time;
 
             stage_manager.get_current_stage()->update(frame_time);
-            stage_manager.get_current_stage()->render();
-
-            std::cout << "FPS: " << get_fps() << std::endl;
+            render_manager.render();
 
             // TODO: Add vsync / framerate cap / sleep?
         }
@@ -69,9 +69,10 @@ namespace Engine
 
     void EngineInstance::init(const std::string &project_path)
     {
-        project_manager.init(project_path + "/project.tetra");
-        asset_manager.init(project_path);
+        ProjectManager::get_instance().init(project_path + "/project.tetra");
+        Asset::AssetManager::get_instance().init(project_path);
+        StageManager::get_instance().load_new_stage();
 
-        stage_manager.load_new_stage();
+        Graphics::RenderManager::get_instance().init();
     }
 }

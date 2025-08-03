@@ -1,6 +1,6 @@
 #include "stage.h"
 
-#include "viewport/viewport.h"
+#include "graphics/viewport.h"
 #include "entity/entity.h"
 #include "component/component.h"
 #include "component/component_manager.h"
@@ -31,11 +31,11 @@ namespace Engine
         if (is_headless())
             return;
 
-        viewport->beginFrame();
+        viewport->begin_frame();
 
         // TODO: Render things
 
-        viewport->endFrame();
+        viewport->end_frame();
     }
 
     void Stage::update(float delta_time)
@@ -45,18 +45,6 @@ namespace Engine
 
     void Stage::physics_update(float delta_time)
     {
-    }
-
-    void Stage::attach_viewport(std::shared_ptr<Viewport> vp)
-    {
-        viewport = std::move(vp);
-        headless = false;
-    }
-
-    void Stage::detach_viewport()
-    {
-        viewport.reset();
-        headless = true;
     }
 
     bool Stage::is_headless() const

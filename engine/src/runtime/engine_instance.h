@@ -4,8 +4,9 @@
 #include <string>
 
 #include "base/singleton.h"
-#include "stage/stage_manager.h"
 #include "project_management/project_manager.h"
+#include "graphics/render_manager.h"
+#include "stage/stage_manager.h"
 #include "asset/asset_manager.h"
 
 namespace Engine
@@ -28,6 +29,7 @@ namespace Engine
     protected:
         StageManager stage_manager;
         ProjectManager project_manager;
+        Graphics::RenderManager render_manager;
         Asset::AssetManager asset_manager;
 
         float delta_time;

@@ -2,6 +2,8 @@
 #include "data/guid.h"
 #include "project_management/project_settings.h"
 
+#include "base/singleton.h"
+
 #include <string>
 #include <memory>
 #include <unordered_map>
@@ -11,7 +13,7 @@ namespace fs = std::filesystem;
 
 namespace Engine
 {
-    class ProjectManager
+    class ProjectManager : public Singleton<ProjectManager>
     {
     public:
         ~ProjectManager() = default;
