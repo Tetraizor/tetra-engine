@@ -6,7 +6,7 @@
 
 namespace Engine
 {
-    Entity::Entity(std::string name) : name(std::move(name)) {}
+    Entity::Entity(std::string name) : name(std::move(name)), components() {}
 
     std::string Entity::get_name() const
     {

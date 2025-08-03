@@ -33,13 +33,14 @@ namespace Engine
 
         EntityID id = {index, generations[index]};
 
-        auto entity = std::make_unique<Entity>(name);
-        entity->set_manager(this);
-        entity->id = id;
+        auto entity_ptr = std::make_unique<Entity>(name);
+        entity_ptr->set_manager(this);
+        entity_ptr->id = id;
 
-        entity_list.emplace(id, std::move(entity));
+        Entity *raw_ptr = entity_ptr.get();
+        entity_list.emplace(id, std::move(entity_ptr));
 
-        return entity.get();
+        return raw_ptr;
     }
 
     void EntityManager::destroy_entity(const EntityID &id)

@@ -22,6 +22,10 @@ namespace Engine
         entity_manager->setup();
     }
 
+    void Stage::start()
+    {
+    }
+
     void Stage::render()
     {
         if (is_headless())
@@ -39,6 +43,10 @@ namespace Engine
         entity_manager->update(delta_time);
     }
 
+    void Stage::physics_update(float delta_time)
+    {
+    }
+
     void Stage::attach_viewport(std::shared_ptr<Viewport> vp)
     {
         viewport = std::move(vp);
@@ -54,6 +62,11 @@ namespace Engine
     bool Stage::is_headless() const
     {
         return headless || !viewport;
+    }
+
+    bool Stage::has_requested_shutdown() const
+    {
+        return requested_shutdown;
     }
 
     EntityManager &Stage::get_entity_manager()

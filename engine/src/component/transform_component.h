@@ -26,7 +26,7 @@ namespace Engine
             y = ctx.read<float>("y");
         }
 
-        void update(float delta_time) override {}
+        void update(float delta_time) override;
         void setup() override;
     };
 }

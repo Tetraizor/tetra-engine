@@ -30,18 +30,23 @@ namespace Engine
 
         // Components
         template <typename T>
-        T *add_component() const
+        T *add_component()
         {
             static_assert(std::is_base_of<Component, T>::value, "T must be a Component");
 
-            auto component = std::make_unique<T>();
-            component->entity = this;
+            try
+            {
+                std::unique_ptr<T> component = std::make_unique<T>();
+                component->set_entity(this);
+                T *ptr = component.get();
 
-            T *ptr = component.get();
-
-            components.push_back(std::move(component));
-
-            return ptr;
+                components.push_back(std::move(component));
+                return ptr;
+            }
+            catch (const std::exception &e)
+            {
+                throw std::runtime_error(std::string("Failed to add component: ") + e.what());
+            }
         }
 
         template <typename T>

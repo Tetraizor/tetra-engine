@@ -45,9 +45,9 @@ namespace Engine
 
     protected:
         ComponentID id;
-        Entity *entity = nullptr;
+        const Entity *entity = nullptr;
 
     private:
-        void set_entity(Entity *entity) { this->entity = entity; }
+        void set_entity(const Entity *entity) { this->entity = entity; }
     };
 }
