@@ -8,6 +8,8 @@
 #include <typeindex>
 #include <cassert>
 
+#include "base/singleton.h"
+
 #include "component.h"
 
 namespace Engine
@@ -16,16 +18,11 @@ namespace Engine
      * @brief Central registry for component types, enabling creation by name and lookup of type names.
      */
 
-    class ComponentRegistry
+    class ComponentRegistry : public Singleton<ComponentRegistry>
     {
         friend class ComponentManager;
 
     public:
-        /**
-         * @brief Get the singleton instance of the registry.
-         */
-        static ComponentRegistry &instance();
-
         /**
          * @brief Get the registered name for a component instance.
          * @param comp Pointer to a component instance.
@@ -138,12 +135,6 @@ namespace Engine
             return {};
         }
 
-        ComponentRegistry() = default;
-        ~ComponentRegistry() = default;
-
-        ComponentRegistry(const ComponentRegistry &) = delete;
-        ComponentRegistry &operator=(const ComponentRegistry &) = delete;
-
         std::unordered_map<std::string, create_func> creators;
         std::unordered_map<std::type_index, std::string> type_names;
     };
@@ -153,7 +144,7 @@ namespace Engine
     namespace                                                 \
     {                                                         \
         const bool registrar_##ComponentName = []() {                                               \
-            Engine::ComponentRegistry::instance().register_type<ComponentClassName>(                \
+            Engine::ComponentRegistry::get_instance().register_type<ComponentClassName>(                \
                 #ComponentName                \
             );                                                                                      \
             return true; }();    \

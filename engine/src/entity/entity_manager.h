@@ -2,6 +2,7 @@
 
 #include "entity/entity_id.h"
 #include "serialization/serializable.h"
+#include "base/singleton.h"
 
 #include <iostream>
 #include <unordered_map>
@@ -12,7 +13,7 @@ namespace Engine
     class Entity;
     class Stage;
 
-    class EntityManager : public Serialization::Serializable
+    class EntityManager : public Serialization::Serializable, public Singleton<EntityManager>
     {
     public:
         EntityManager(Stage *owner_stage_ptr);

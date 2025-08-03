@@ -4,12 +4,6 @@
 
 namespace Engine
 {
-    ComponentRegistry &ComponentRegistry::instance()
-    {
-        static ComponentRegistry registry;
-        return registry;
-    }
-
     std::unique_ptr<Component> ComponentRegistry::instantiate_raw(const std::string &name) const
     {
         auto it = creators.find(name);

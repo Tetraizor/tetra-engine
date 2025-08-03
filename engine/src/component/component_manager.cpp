@@ -10,7 +10,7 @@ namespace Engine
         stage = owner_stage_ptr;
 
         std::cout << "[ComponentManager] Initialized successfully!" << std::endl;
-        std::cout << "[ComponentManager] Loaded " << ComponentRegistry::instance().get_type_names().size() << " components:" << std::endl;
+        std::cout << "[ComponentManager] Loaded " << ComponentRegistry::get_instance().get_type_names().size() << " components:" << std::endl;
     }
 
     void ComponentManager::destroy_component(const ComponentID id)
@@ -82,7 +82,7 @@ namespace Engine
 
             std::string component_type = ctx.read<std::string>("type");
 
-            std::unique_ptr<Component> component = ComponentRegistry::instance().instantiate_raw(component_type);
+            std::unique_ptr<Component> component = ComponentRegistry::get_instance().instantiate_raw(component_type);
             if (!component)
                 throw std::runtime_error("Unknown component type: " + component_type);
 

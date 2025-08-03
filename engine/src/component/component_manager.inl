@@ -20,7 +20,7 @@ namespace Engine
 
         ComponentID component_id = allocate_id();
 
-        std::unique_ptr<T> component_ptr = ComponentRegistry::instance().instantiate_raw_typed<T>();
+        std::unique_ptr<T> component_ptr = ComponentRegistry::get_instance().instantiate_raw_typed<T>();
 
         component_ptr->id = component_id;
         component_ptr->entity = entity;
