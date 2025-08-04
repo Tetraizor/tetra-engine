@@ -7,7 +7,7 @@
 namespace Engine
 {
     template <typename T>
-    Component *ComponentManager::create_component(EntityID owner_id)
+    std::shared_ptr<Component> ComponentManager::create_component(EntityID owner_id)
     {
         static_assert(std::is_base_of<Component, T>::value, "T must inherit from Component");
 

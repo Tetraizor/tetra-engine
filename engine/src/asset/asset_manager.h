@@ -55,9 +55,9 @@ namespace Engine::Asset
     {
         static_assert(std::is_base_of<AssetBase, T>::value, "T must derive from AssetBase");
 
-        auto it = loaded_asset.find(guid);
+        auto it = loaded_assets.find(guid);
         if (it != loaded_assets.end())
-            return std::dynamic_pointer_cast<T>(it->second.data);
+            return std::dynamic_pointer_cast<T>(it->second);
 
         auto meta_it = guid_to_meta.find(guid);
         if (meta_it == guid_to_meta.end())

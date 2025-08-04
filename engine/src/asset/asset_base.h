@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <memory>
 
 #include "serialization/serializable.h"
 #include "base/runtime_object_base.h"
@@ -43,7 +44,6 @@ namespace Engine::Asset
 
     protected:
         AssetMeta meta;
-
         AssetLoadState load_state;
     };
 }

@@ -12,7 +12,10 @@ namespace Engine
     class StageManager : public Singleton<StageManager>
     {
     public:
-        Stage *get_current_stage() { return current_stage.get(); }
+        Stage *get_current_stage()
+        {
+            return current_stage.get();
+        }
         std::unique_ptr<Stage> create_empty_stage();
 
         void load_new_stage();

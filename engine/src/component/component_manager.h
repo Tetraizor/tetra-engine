@@ -28,7 +28,7 @@ namespace Engine
         Event<> component_destroyed;
 
         template <typename T>
-        Component *create_component(EntityID owner_id);
+        std::shared_ptr<Component> create_component(EntityID owner_id);
 
         void destroy_component(const ComponentID id);
         Component *get_component_by_id(const ComponentID id) const;

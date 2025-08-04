@@ -13,6 +13,5 @@ namespace Engine
 
     void TransformComponent::update(float delta_time)
     {
-        std::cout << "Transform is alive!" << std::endl;
     }
 }

@@ -4,6 +4,9 @@
 #include "serialization/serialization_context.h"
 #include "serialization/serializable.h"
 
+#include "stage/stage_manager.h"
+#include "component/component_manager.h"
+
 #include <string>
 #include <memory>
 #include <typeindex>
@@ -36,12 +39,11 @@ namespace Engine
 
             try
             {
-                std::unique_ptr<T> component = std::make_unique<T>();
-                component->set_entity(this);
-                T *ptr = component.get();
+                std::shared_ptr<Component> component_ptr = StageManager::get_instance().get_current_stage()->get_component_manager().create_component<T>(id);
+                Component *ptr = component_ptr.get();
 
-                components.push_back(std::move(component));
-                return ptr;
+                components.push_back(component_ptr);
+                return static_cast<T *>(ptr);
             }
             catch (const std::exception &e)
             {
@@ -107,7 +109,7 @@ namespace Engine
         // Self properties
         EntityID id;
         std::string name;
-        std::vector<std::unique_ptr<Component>> components;
+        std::vector<std::shared_ptr<Component>> components;
 
         void set_manager(EntityManager *entity_manager) { this->entity_manager = entity_manager; }
     };

@@ -59,7 +59,7 @@ namespace Engine
             delta_time = frame_time;
 
             stage_manager.get_current_stage()->update(frame_time);
-            render_manager.render();
+            Graphics::RenderManager::get_instance().render();
 
             // TODO: Add vsync / framerate cap / sleep?
         }

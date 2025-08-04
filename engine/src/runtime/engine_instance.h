@@ -27,11 +27,6 @@ namespace Engine
         virtual void init(const std::string &project_path);
 
     protected:
-        StageManager stage_manager;
-        ProjectManager project_manager;
-        Graphics::RenderManager render_manager;
-        Asset::AssetManager asset_manager;
-
         float delta_time;
     };
 }

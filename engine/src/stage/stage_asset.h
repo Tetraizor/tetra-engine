@@ -38,7 +38,6 @@ namespace Engine::Asset
             auto content_opt = Utils::IO::read_file_contents(get_meta().path);
             if (!content_opt.has_value())
             {
-                // log error or fallback behavior
                 return nullptr;
             }
             JsonDocument doc(content_opt.value());
