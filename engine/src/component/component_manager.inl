@@ -25,7 +25,7 @@ namespace Engine
         component_ptr->id = component_id;
         component_ptr->entity = entity;
 
-        component_list[component_id] = std::move(component_ptr);
+        component_list[component_id] = component_ptr;
 
         component_created.invoke();
 

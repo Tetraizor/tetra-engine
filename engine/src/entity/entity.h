@@ -39,7 +39,13 @@ namespace Engine
 
             try
             {
-                std::shared_ptr<Component> component_ptr = StageManager::get_instance().get_current_stage()->get_component_manager().create_component<T>(id);
+                auto &stage_manager = StageManager::get_instance();
+                Stage *stage = stage_manager.get_current_stage();
+                assert(stage != nullptr);
+
+                ComponentManager &component_manager = stage->get_component_manager();
+
+                std::shared_ptr<Component> component_ptr = component_manager.create_component<T>(id);
                 Component *ptr = component_ptr.get();
 
                 components.push_back(component_ptr);

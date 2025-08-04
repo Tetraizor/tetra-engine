@@ -48,12 +48,12 @@ namespace Engine
         this->parent_id = parent_id;
     }
 
-    void Entity::update(float deltaTime)
+    void Entity::update(float delta_time)
     {
         for (auto &component : components)
         {
             assert(component && "Component reference is not valid.");
-            component->update(deltaTime);
+            component->update(delta_time);
         }
     }
 

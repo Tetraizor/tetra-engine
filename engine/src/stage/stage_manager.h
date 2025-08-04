@@ -12,6 +12,11 @@ namespace Engine
     class StageManager : public Singleton<StageManager>
     {
     public:
+        StageManager()
+        {
+            std::cout << "[StageManager] Initialization complete..." << std::endl;
+        }
+
         Stage *get_current_stage()
         {
             return current_stage.get();

@@ -8,14 +8,14 @@ namespace Engine
     {
         auto stage_ptr = std::make_unique<Stage>();
 
-        Entity *entity = stage_ptr->get_entity_manager().create_entity("New Object");
-        entity->add_component<TransformComponent>();
-
         return stage_ptr;
     }
 
     void StageManager::load_new_stage()
     {
         current_stage = create_empty_stage();
+
+        Entity *entity = current_stage->get_entity_manager().create_entity("New Object");
+        entity->add_component<TransformComponent>();
     }
 }

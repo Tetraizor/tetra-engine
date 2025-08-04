@@ -7,6 +7,11 @@
 
 namespace Engine::Graphics
 {
+    RenderManager::RenderManager()
+    {
+        std::cout << "*** Spawn RenderManager ***" << std::endl;
+    }
+
     void RenderManager::init()
     {
         stage_manager_ptr = &Engine::StageManager::get_instance();
