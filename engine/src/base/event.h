@@ -33,8 +33,8 @@ namespace Engine
          */
         size_t subscribe(Callback cb)
         {
-            size_t id = _next_id++;
-            _entries.push_back({id, std::move(cb), std::weak_ptr<void>(), false});
+            size_t id = next_id++;
+            entries.push_back({id, std::move(cb), std::weak_ptr<void>(), false});
             return id;
         }
 
@@ -87,8 +87,8 @@ namespace Engine
         template <typename T>
         size_t subscribe(std::shared_ptr<T> owner, Callback cb)
         {
-            size_t id = _next_id++;
-            _entries.push_back({id, std::move(cb), std::weak_ptr<void>(owner), false});
+            size_t id = next_id++;
+            entries.push_back({id, std::move(cb), std::weak_ptr<void>(owner), false});
             return id;
         }
 
@@ -101,12 +101,12 @@ namespace Engine
          */
         void unsubscribe(size_t id)
         {
-            _entries.erase(
+            entries.erase(
                 std::remove_if(
-                    _entries.begin(), _entries.end(),
+                    entries.begin(), entries.end(),
                     [&](auto &e)
                     { return e.id == id; }),
-                _entries.end());
+                entries.end());
         }
 
         /**
@@ -122,15 +122,15 @@ namespace Engine
         void unsubscribe_owner(const std::shared_ptr<T> &owner)
         {
             std::weak_ptr<void> target{owner};
-            _entries.erase(
+            entries.erase(
                 std::remove_if(
-                    _entries.begin(), _entries.end(),
+                    entries.begin(), entries.end(),
                     [&](auto &e)
                     {
                         // Compare two weak_ptr<void> for equality
                         return !e.owner.owner_before(target) && !target.owner_before(e.owner);
                     }),
-                _entries.end());
+                entries.end());
         }
 
         /**
@@ -144,28 +144,30 @@ namespace Engine
         void invoke(Args... args)
         {
             std::vector<size_t> expired;
-            for (auto &e : _entries)
+            for (auto &entry : entries)
             {
-                if (e.owner.expired())
+                if (
+                    !entry.owner.owner_before(std::weak_ptr<void>{}) &&
+                    !std::weak_ptr<void>{}.owner_before(entry.owner))
                 {
-                    expired.push_back(e.id);
+                    entry.cb(args...);
                 }
                 else
                 {
-                    e.cb(args...);
+                    expired.push_back(entry.id);
                 }
             }
 
             if (!expired.empty())
             {
-                _entries.erase(
+                entries.erase(
                     std::remove_if(
-                        _entries.begin(), _entries.end(),
+                        entries.begin(), entries.end(),
                         [&](auto &e)
                         {
                             return std::find(expired.begin(), expired.end(), e.id) != expired.end();
                         }),
-                    _entries.end());
+                    entries.end());
             }
         }
 
@@ -186,8 +188,8 @@ namespace Engine
             bool once;
         };
 
-        std::vector<Entry> _entries; ///< All current subscriber entries.
-        size_t _next_id{1};          ///< Monotonically increasing ID generator.
+        std::vector<Entry> entries; // All current subscriber entries.
+        size_t next_id{1};          // Monotonically increasing ID generator.
     };
 
 } // namespace Engine

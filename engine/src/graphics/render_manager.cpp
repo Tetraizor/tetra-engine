@@ -15,23 +15,9 @@ namespace Engine::Graphics
     void RenderManager::init()
     {
         stage_manager_ptr = &Engine::StageManager::get_instance();
-        std::cout << "StageManager instance acquired.\n";
 
         Stage *stage = stage_manager_ptr->get_current_stage();
-        if (!stage)
-        {
-            std::cerr << "get_current_stage() returned null!\n";
-            return;
-        }
-        std::cout << "Current stage acquired.\n";
-
         ComponentManager *comp_mgr = &stage->get_component_manager();
-        if (!comp_mgr)
-        {
-            std::cerr << "get_component_manager() returned null!\n";
-            return;
-        }
-        std::cout << "ComponentManager acquired.\n";
 
         comp_mgr->component_created.subscribe(this, &RenderManager::on_component_added);
         comp_mgr->component_destroyed.subscribe(this, &RenderManager::on_component_destroyed);

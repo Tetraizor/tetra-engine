@@ -14,8 +14,5 @@ namespace Engine
     void StageManager::load_new_stage()
     {
         current_stage = create_empty_stage();
-
-        Entity *entity = current_stage->get_entity_manager().create_entity("New Object");
-        entity->add_component<TransformComponent>();
     }
 }
