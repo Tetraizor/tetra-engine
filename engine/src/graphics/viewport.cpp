@@ -1,4 +1,7 @@
 #include "viewport.h"
+
+#include "engine.h"
+
 #include <iostream>
 
 namespace Engine::Graphics
@@ -28,7 +31,7 @@ namespace Engine::Graphics
         // Check framebuffer completeness
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         {
-            std::cerr << "[Viewport] Failed to create framebuffer for viewport\n";
+            Logger::log_error("[Viewport] Failed to create framebuffer for viewport");
             return false;
         }
 

@@ -1,5 +1,7 @@
 #include "render_manager.h"
 
+#include "engine.h"
+
 #include "stage/stage_manager.h"
 #include "component/component_manager.h"
 
@@ -7,11 +9,6 @@
 
 namespace Engine::Graphics
 {
-    RenderManager::RenderManager()
-    {
-        std::cout << "*** Spawn RenderManager ***" << std::endl;
-    }
-
     void RenderManager::init()
     {
         stage_manager_ptr = &Engine::StageManager::get_instance();
@@ -21,7 +18,6 @@ namespace Engine::Graphics
 
         comp_mgr->component_created.subscribe(this, &RenderManager::on_component_added);
         comp_mgr->component_destroyed.subscribe(this, &RenderManager::on_component_destroyed);
-        std::cout << "Event subscriptions done.\n";
 
         Entity *test = stage->get_entity_manager().create_entity("Test");
         test->add_component<TransformComponent>();
@@ -29,12 +25,10 @@ namespace Engine::Graphics
 
     void RenderManager::on_component_added()
     {
-        std::cout << "New component added!" << std::endl;
     }
 
     void RenderManager::on_component_destroyed()
     {
-        std::cout << "Component removed!" << std::endl;
     }
 
     void RenderManager::render()

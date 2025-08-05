@@ -4,7 +4,9 @@
 #include <chrono>
 #include <filesystem>
 
+#include "engine.h"
 #include "stage/stage.h"
+#include "debug/logging/console_sink.h"
 
 namespace Engine
 {
@@ -12,12 +14,12 @@ namespace Engine
 
     int EngineInstance::run(std::vector<std::string> arguments)
     {
-        std::cout << "[EngineInstance] Starting up..." << std::endl;
-        std::cout << "[EngineInstance] Start arguments: " << std::endl;
+        Logger::log_info("[EngineInstance] Starting up...");
+        Logger::log_info("[EngineInstance] Start arguments: ");
 
         for (std::string arg : arguments)
         {
-            std::cout << '\t' << arg << std::endl;
+            Logger::log_info('\t' + arg);
         }
 
         StageManager &stage_manager = StageManager::get_instance();
@@ -69,6 +71,9 @@ namespace Engine
 
     void EngineInstance::init(const std::string &project_path)
     {
+        std::shared_ptr<LogSink> console_sink = std::make_shared<ConsoleSink>();
+        Logger::get_instance().add_sink(console_sink);
+
         ProjectManager::get_instance().init(project_path + "/project.tetra");
         Asset::AssetManager::get_instance().init(project_path);
         StageManager::get_instance().load_new_stage();

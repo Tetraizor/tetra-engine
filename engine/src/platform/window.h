@@ -1,4 +1,3 @@
-// platform/window.h
 #pragma once
 
 #include "graphics/opengl/opengl_context.h"

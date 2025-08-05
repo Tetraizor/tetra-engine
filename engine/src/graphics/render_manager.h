@@ -8,8 +8,6 @@ namespace Engine::Graphics
     class RenderManager : public Singleton<RenderManager>
     {
     public:
-        RenderManager();
-
         void init();
         void render();
 

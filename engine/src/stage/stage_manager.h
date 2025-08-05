@@ -4,6 +4,7 @@
 #include "data/guid.h"
 
 #include "base/singleton.h"
+#include "engine.h"
 
 #include <memory>
 
@@ -14,7 +15,7 @@ namespace Engine
     public:
         StageManager()
         {
-            std::cout << "[StageManager] Initialization complete..." << std::endl;
+            Logger::log("[StageManager] Initialization complete", LogLevel::Info);
         }
 
         Stage *get_current_stage()

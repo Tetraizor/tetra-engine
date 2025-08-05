@@ -1,8 +1,11 @@
-#include "project_management/project_manager.h"
+#include "project_manager.h"
+
 #include "serialization/json/json_value.h"
 #include "serialization/json/json_document.h"
 #include "serialization/json/json_serialization_context.h"
 #include "utils/io.h"
+
+#include "engine.h"
 
 #include <iostream>
 #include <filesystem>
@@ -13,8 +16,8 @@ namespace Engine
 {
     void ProjectManager::init(const std::string &project_file_path)
     {
-        std::cout << "[ProjectManager] Starting to load project..." << std::endl;
-        std::cout << "[ProjectManager] Path: " << project_file_path << std::endl;
+        Logger::log_info("[ProjectManager] Loading project...");
+        Logger::log_info("[ProjectManager] Path: " + project_file_path);
 
         project_path_abs = fs::path(project_file_path).parent_path();
 

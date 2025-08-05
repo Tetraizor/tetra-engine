@@ -1,13 +1,15 @@
 #include "platform/window.h"
 #include <iostream>
 
+#include "engine.h"
+
 namespace Engine::Platform
 {
     Window::Window(const Config &config)
     {
         if (!SDL_Init(SDL_INIT_VIDEO))
         {
-            std::cerr << "[Window] SDL_Init failed: " << SDL_GetError() << std::endl;
+            Logger::log_error("[Window] SDL_Init failed: " + std::string(SDL_GetError()));
             throw std::runtime_error("Failed to initialize SDL.");
         }
 
@@ -21,14 +23,14 @@ namespace Engine::Platform
         sdl_window = SDL_CreateWindow(config.title.c_str(), config.width, config.height, flags);
         if (!sdl_window)
         {
-            std::cerr << "[Window] SDL_CreateWindow failed: " << SDL_GetError() << std::endl;
+            Logger::log_error("[Window] SDL_CreateWindow failed: " + std::string(SDL_GetError()));
             throw std::runtime_error("Failed to create SDL window.");
         }
 
         gl_context = std::make_unique<Engine::Graphics::OpenGL::OpenGLContext>();
         if (!gl_context->initialize(sdl_window))
         {
-            std::cerr << "[Window] Could not initialize OpenGLContext" << std::endl;
+            Logger::log_error("[Window] Could not initialize OpenGLContext");
         }
     }
 

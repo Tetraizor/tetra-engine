@@ -8,8 +8,9 @@
 #include <typeindex>
 #include <cassert>
 
-#include "base/singleton.h"
+#include "engine.h"
 
+#include "base/singleton.h"
 #include "component.h"
 
 namespace Engine
@@ -47,7 +48,7 @@ namespace Engine
         {
             static_assert(std::is_base_of<Component, T>::value, "T must derive from Component");
 
-            std::cout << "[ComponentRegistry] Registered component with name " << name << std::endl;
+            Logger::log_info("[ComponentRegistry] Registered component with name " + name);
 
             std::type_index type_index(typeid(T));
             creators[name] = []()

@@ -17,8 +17,8 @@ namespace Engine
     public:
         virtual ~Component() = default;
 
-        virtual void update(float delta_time) = 0;
-        virtual void setup() = 0;
+        virtual void update(float delta_time) {};
+        virtual void setup() {};
 
         ComponentID get_id() { return id; }
 

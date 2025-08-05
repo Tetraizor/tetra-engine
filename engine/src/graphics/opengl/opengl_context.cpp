@@ -1,6 +1,9 @@
 #include "graphics/opengl/opengl_context.h"
 
+#include "engine.h"
+
 #include <iostream>
+#include <string>
 
 namespace Engine::Graphics::OpenGL
 {
@@ -17,7 +20,7 @@ namespace Engine::Graphics::OpenGL
     {
         if (!window)
         {
-            std::cerr << "[OpenGLContext] Invalid SDL_Window pointer!" << std::endl;
+            Logger::log_error("[OpenGLContext] Invalid SDL_Window pointer");
             return false;
         }
 
@@ -25,27 +28,27 @@ namespace Engine::Graphics::OpenGL
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5) < 0 ||
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE) < 0)
         {
-            std::cerr << "[OpenGLContext] Failed to set context attributes: " << SDL_GetError() << std::endl;
+            Logger::log_error("[OpenGLContext] Failed to set context attributes: " + std::string(SDL_GetError()));
             return false;
         }
 
         gl_context = SDL_GL_CreateContext(window);
         if (!gl_context)
         {
-            std::cerr << "[OpenGLContext] Failed to create OpenGL context: " << SDL_GetError() << std::endl;
+            Logger::log_error("[OpenGLContext] Failed to create OpenGL context: " + std::string(SDL_GetError()));
             return false;
         }
 
         if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress))
         {
-            std::cerr << "[OpenGLContext] Failed to initialize GLAD." << std::endl;
+            Logger::log_error("[OpenGLContext] Failed to initialize GLAD.");
             return false;
         }
 
-        std::cout << "[OpenGLContext] OpenGL context initialized successfully." << std::endl;
-        std::cout << "  Version: " << glGetString(GL_VERSION) << std::endl;
-        std::cout << "  Renderer: " << glGetString(GL_RENDERER) << std::endl;
-        std::cout << "  Vendor: " << glGetString(GL_VENDOR) << std::endl;
+        Logger::log_info("[OpenGLContext] OpenGL context initialized successfully");
+        Logger::log_info(std::string("  Version: ") + reinterpret_cast<const char *>(glGetString(GL_VERSION)));
+        Logger::log_info(std::string("  Renderer: ") + reinterpret_cast<const char *>(glGetString(GL_RENDERER)));
+        Logger::log_info(std::string("  Vendor: ") + reinterpret_cast<const char *>(glGetString(GL_VENDOR)));
 
         return true;
     }

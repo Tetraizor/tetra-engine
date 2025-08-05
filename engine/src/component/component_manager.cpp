@@ -9,8 +9,8 @@ namespace Engine
     {
         stage = owner_stage_ptr;
 
-        std::cout << "[ComponentManager] Initialized successfully!" << std::endl;
-        std::cout << "[ComponentManager] Loaded " << ComponentRegistry::get_instance().get_type_names().size() << " components:" << std::endl;
+        Logger::log_info("[ComponentManager] Initialization complete");
+        Logger::log_info("[ComponentManager] Loaded " + std::to_string(ComponentRegistry::get_instance().get_type_names().size()) + " components.");
     }
 
     void ComponentManager::destroy_component(const ComponentID id)

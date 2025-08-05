@@ -11,7 +11,7 @@ namespace Engine
     {
         stage = owner_stage_ptr;
 
-        std::cout << "[EntityManager] Initialized successfully!" << std::endl;
+        Logger::log_info("[EntityManager] Initialization complete");
     }
 
     Entity *EntityManager::create_entity(std::string name)
