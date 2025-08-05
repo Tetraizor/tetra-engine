@@ -104,9 +104,7 @@ namespace Engine
 
             std::shared_ptr<Component> base = instantiate_raw<T>();
 
-            T *casted = static_cast<T *>(base.get());
-
-            return std::shared_ptr<T>(casted);
+            return std::static_pointer_cast<T>(base);
         }
 
         /**
