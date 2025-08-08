@@ -27,7 +27,7 @@ namespace Engine
 
         component_list[component_id] = component_ptr;
 
-        component_created.invoke();
+        component_created.invoke(component_ptr);
 
         return component_list[component_id];
     }

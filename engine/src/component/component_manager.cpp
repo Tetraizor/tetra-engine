@@ -1,4 +1,5 @@
-#include "component/component_manager.h"
+#include "component_manager.h"
+
 #include "component/component.h"
 #include "component/component_registry.h"
 #include "entity/entity_id.h"
@@ -19,12 +20,12 @@ namespace Engine
         if (it == component_list.end())
             return;
 
+        component_destroyed.invoke(it->second);
+
         component_list.erase(it);
 
         free_indices.push_back(id.index);
         generations[id.index]++;
-
-        component_destroyed.invoke();
     }
 
     Component *ComponentManager::get_component_by_id(const ComponentID id) const

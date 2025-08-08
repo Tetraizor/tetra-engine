@@ -6,35 +6,53 @@
 #include "component/component_manager.h"
 
 #include "component/transform_component.h"
+#include "component/camera_component.h"
 
 namespace Engine::Graphics
 {
+    RenderManager::RenderManager() : stage_manager(StageManager::get_instance()) {}
+
     void RenderManager::init()
     {
-        stage_manager_ptr = &Engine::StageManager::get_instance();
+        Stage *stage_ptr = stage_manager.get_current_stage();
+        if (stage_ptr == nullptr)
+            throw std::runtime_error("current_stage is null");
 
-        Stage *stage = stage_manager_ptr->get_current_stage();
-        ComponentManager *comp_mgr = &stage->get_component_manager();
+        ComponentManager &component_manager = stage_ptr->get_component_manager();
 
-        comp_mgr->component_created.subscribe(this, &RenderManager::on_component_added);
-        comp_mgr->component_destroyed.subscribe(this, &RenderManager::on_component_destroyed);
+        camera_components = component_manager.get_components_by_type<CameraComponent>();
 
-        Entity *test = stage->get_entity_manager().create_entity("Test");
+        component_manager.component_created.subscribe(this, &RenderManager::on_component_created);
+        component_manager.component_destroyed.subscribe(this, &RenderManager::on_component_destroyed);
+
+        Entity *test = stage_ptr->get_entity_manager().create_entity("Test");
         test->add_component<TransformComponent>();
     }
 
-    void RenderManager::on_component_added()
+    void RenderManager::on_component_created(std::weak_ptr<Component> component_ptr)
     {
+        auto component_shared_ptr = component_ptr.lock();
+        assert(component_shared_ptr);
+
+        std::shared_ptr<CameraComponent> camera = std::dynamic_pointer_cast<CameraComponent>(component_shared_ptr);
+        if (camera)
+            camera_components.push_back(camera);
     }
 
-    void RenderManager::on_component_destroyed()
+    void RenderManager::on_component_destroyed(std::weak_ptr<Component> component_ptr)
     {
+        ComponentManager &component_manager = stage_manager.get_current_stage()->get_component_manager();
+        camera_components = component_manager.get_components_by_type<CameraComponent>();
     }
 
     void RenderManager::render()
     {
-        Stage *current_stage = stage_manager_ptr->get_current_stage();
-        if (!current_stage)
-            return;
+        for (auto &camera_component_weak : camera_components)
+        {
+            assert(!camera_component_weak.expired());
+            std::shared_ptr<CameraComponent> camera_component_ptr = camera_component_weak.lock();
+
+            camera_component_ptr->render();
+        }
     }
 }

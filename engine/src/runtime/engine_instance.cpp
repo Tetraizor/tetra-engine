@@ -23,12 +23,9 @@ namespace Engine
         }
 
         StageManager &stage_manager = StageManager::get_instance();
-        Stage *current_stage = stage_manager.get_current_stage();
-
-        if (!current_stage)
-        {
-            throw std::runtime_error("current_stage is null");
-        }
+        Stage *current_stage_ptr = stage_manager.get_current_stage();
+        if (current_stage_ptr == nullptr)
+            throw std::runtime_error("Current stage is null");
 
         // Start main engine loop
         using clock = std::chrono::high_resolution_clock;

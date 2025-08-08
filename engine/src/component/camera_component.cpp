@@ -11,4 +11,8 @@ namespace Engine
     void CameraComponent::update(float delta_time)
     {
     }
+
+    void CameraComponent::render()
+    {
+    }
 }

@@ -11,6 +11,8 @@ namespace Engine
         void update(float delta_time) override;
         void setup() override;
 
+        virtual void render();
+
         void serialize(Serialization::SerializationContext &ctx) const override
         {
             Component::serialize(ctx);

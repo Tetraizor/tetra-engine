@@ -41,7 +41,8 @@ namespace Engine
             {
                 auto &stage_manager = StageManager::get_instance();
                 Stage *stage = stage_manager.get_current_stage();
-                assert(stage != nullptr);
+                if (stage == nullptr)
+                    throw std::runtime_error("Current scene is null");
 
                 ComponentManager &component_manager = stage->get_component_manager();
 

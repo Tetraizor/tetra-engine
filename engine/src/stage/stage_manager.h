@@ -22,6 +22,7 @@ namespace Engine
         {
             return current_stage.get();
         }
+
         std::unique_ptr<Stage> create_empty_stage();
 
         void load_new_stage();
