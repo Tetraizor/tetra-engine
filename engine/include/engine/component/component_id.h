@@ -1,6 +1,6 @@
 #pragma once
 
-#include "serialization/serialization_context.h"
+#include <engine/serialization/serialization_context.h>
 
 #include <cstdint>
 #include <functional>

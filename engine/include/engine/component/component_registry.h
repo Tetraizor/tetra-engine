@@ -8,10 +8,9 @@
 #include <typeindex>
 #include <cassert>
 
-#include "engine.h"
+#include <engine/engine.h>
 
-#include "base/singleton.h"
-#include "component.h"
+#include <engine/base/singleton.h>
 
 namespace Engine
 {

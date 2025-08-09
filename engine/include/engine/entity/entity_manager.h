@@ -1,8 +1,8 @@
 #pragma once
 
-#include "entity/entity_id.h"
-#include "serialization/serializable.h"
-#include "base/singleton.h"
+#include <engine/entity/entity_id.h>
+#include <engine/serialization/serializable.h>
+#include <engine/base/singleton.h>
 
 #include <iostream>
 #include <unordered_map>

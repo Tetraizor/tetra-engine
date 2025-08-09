@@ -1,4 +1,4 @@
-#include "component_registry.h"
+﻿#include <engine/component_registry.h>
 
 #include <cassert>
 

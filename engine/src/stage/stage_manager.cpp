@@ -1,6 +1,6 @@
-#include "stage_manager.h"
-#include "entity/entity.h"
-#include "component/transform_component.h"
+﻿#include <engine/stage/stage_manager.h>
+#include <engine/entity/entity.h>
+#include <engine/component/transform_component.h>
 
 namespace Engine
 {

@@ -1,11 +1,11 @@
 #pragma once
 
 #include <memory>
-#include "graphics/viewport.h"
-#include "entity/entity_manager.h"
-#include "serialization/serializable.h"
-#include "data/guid.h"
-#include "base/runtime_object_base.h"
+#include <engine/graphics/viewport.h>
+#include <engine/entity/entity_manager.h>
+#include <engine/serialization/serializable.h>
+#include <engine/data/guid.h>
+#include <engine/base/runtime_object_base.h>
 
 namespace Engine::Serialization
 {

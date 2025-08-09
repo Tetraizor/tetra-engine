@@ -1,6 +1,6 @@
 #pragma once
 
-#include "serialization/json/json_value.h"
+#include <engine/serialization/json/json_value.h>
 
 namespace Engine::Serialization::Json
 {

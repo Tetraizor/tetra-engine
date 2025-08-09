@@ -1,6 +1,6 @@
 #pragma once
 
-#include "data/guid.h"
+#include <engine/data/guid.h>
 
 namespace Engine::Asset
 {

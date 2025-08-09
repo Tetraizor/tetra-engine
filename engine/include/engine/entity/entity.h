@@ -1,11 +1,11 @@
 #pragma once
 
-#include "entity/entity_id.h"
-#include "serialization/serialization_context.h"
-#include "serialization/serializable.h"
+#include <engine/entity/entity_id.h>
+#include <engine/serialization/serialization_context.h>
+#include <engine/serialization/serializable.h>
 
-#include "stage/stage_manager.h"
-#include "component/component_manager.h"
+#include <engine/stage/stage_manager.h>
+#include <engine/component/component_manager.h>
 
 #include <string>
 #include <memory>

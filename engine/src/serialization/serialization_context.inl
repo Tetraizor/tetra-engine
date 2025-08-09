@@ -1,6 +1,7 @@
 #pragma once
 
-#include "serialization/serializer.h"
+#include <engine/serialization/serialization_context.h>
+#include <engine/serialization/serializer.h>
 #include <string>
 
 namespace Engine::Serialization

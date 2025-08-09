@@ -1,10 +1,10 @@
 #pragma once
 
-#include "stage/stage.h"
-#include "data/guid.h"
+#include <engine/stage/stage.h>
+#include <engine/data/guid.h>
 
-#include "base/singleton.h"
-#include "engine.h"
+#include <engine/base/singleton.h>
+#include <engine/engine.h>
 
 #include <memory>
 

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "component/component_id.h"
-#include "serialization/serializable.h"
-#include "base/engine_object.h"
+#include <engine/component/component_id.h>
+#include <engine/serialization/serializable.h>
+#include <engine/base/engine_object.h>
 
 namespace Engine
 {

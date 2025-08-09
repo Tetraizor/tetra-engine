@@ -1,9 +1,9 @@
 #pragma once
 
 #include <string>
-#include "base/singleton.h"
-#include "asset/asset_meta.h"
-#include "asset/asset_base.h"
+#include <engine/base/singleton.h>
+#include <engine/asset/asset_meta.h>
+#include <engine/asset/asset_base.h>
 
 // TODO: Implement a virtual file system for exports
 

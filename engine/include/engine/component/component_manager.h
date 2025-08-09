@@ -1,12 +1,8 @@
 #pragma once
 
-#include "stage/stage.h"
-#include "component/component_id.h"
-#include "component/component.h"
-#include "entity/entity_id.h"
-#include "serialization/serializable.h"
+#include <engine/engine.h>
 
-#include "base/event.h"
+#include <engine/serialization/serializable.h>
 
 #include <iostream>
 #include <unordered_map>
@@ -15,6 +11,7 @@
 namespace Engine
 {
     class Component;
+    class ComponentRegistry;
 
     class ComponentManager : public Serialization::Serializable
     {

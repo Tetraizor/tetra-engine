@@ -1,7 +1,7 @@
 #pragma once
 
-#include "component/component_registry.h"
-#include "graphics/viewport.h"
+#include <engine/component/component_registry.h>
+#include <engine/graphics/viewport.h>
 
 namespace Engine
 {

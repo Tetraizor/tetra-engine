@@ -1,5 +1,5 @@
-#include "component_registry.h"
-#include "transform_component.h"
+﻿#include <engine/component_registry.h>
+#include <engine/transform_component.h>
 
 REGISTER_COMPONENT(TransformComponent, Engine::TransformComponent)
 

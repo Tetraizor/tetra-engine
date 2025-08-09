@@ -3,8 +3,8 @@
 #include <string>
 #include <memory>
 
-#include "serialization/serializable.h"
-#include "base/runtime_object_base.h"
+#include <engine/serialization/serializable.h>
+#include <engine/base/runtime_object_base.h>
 
 using namespace Engine::Serialization;
 

@@ -12,7 +12,7 @@
 #include <thread>
 #include <iostream>
 
-#include "base/singleton.h"
+#include <engine/base/singleton.h>
 
 // Severity levels for log messages
 enum class LogLevel
