@@ -1,4 +1,4 @@
-#include "camera_component.h"
+#include "engine/component/camera_component.h"
 
 REGISTER_COMPONENT(CameraComponent, Engine::CameraComponent)
 

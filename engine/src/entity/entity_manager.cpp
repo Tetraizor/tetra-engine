@@ -1,7 +1,7 @@
-#include "entity/entity_manager.h"
-#include "entity/entity_id.h"
-#include "entity/entity.h"
-#include "component/component.h"
+﻿#include "engine/entity/entity_manager.h"
+#include "engine/entity/entity_id.h"
+#include "engine/entity/entity.h"
+#include "engine/component/component.h"
 
 #include <cassert>
 

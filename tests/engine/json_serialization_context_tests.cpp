@@ -1,12 +1,12 @@
 #include <gtest/gtest.h>
-#include "serialization/json/json_serialization_context.h"
-#include "serialization/serializer.h"
-#include "stage/stage.h"
-
-#include "exceptions/json_key_not_found_exception.h"
-#include "exceptions/json_type_mismatch_exception.h"
-
 #include <string>
+
+#include "engine/serialization/json/json_serialization_context.h"
+#include "engine/serialization/serializer.h"
+#include "engine/stage/stage.h"
+
+#include "engine/exceptions/json_key_not_found_exception.h"
+#include "engine/exceptions/json_type_mismatch_exception.h"
 
 using namespace Engine::Serialization;
 using namespace Engine::Serialization::Json;

@@ -1,12 +1,12 @@
-#include "engine_instance.h"
+﻿#include "engine/runtime/engine_instance.h"
 
 #include <iostream>
 #include <chrono>
 #include <filesystem>
 
-#include "engine.h"
-#include "stage/stage.h"
-#include "debug/logging/console_sink.h"
+#include "engine/engine.h"
+#include "engine/stage/stage.h"
+#include "engine/debug/logging/console_sink.h"
 
 namespace Engine
 {

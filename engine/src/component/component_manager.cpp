@@ -1,8 +1,7 @@
-#include "component_manager.h"
-
-#include "component/component.h"
-#include "component/component_registry.h"
-#include "entity/entity_id.h"
+#include "engine/component/component_manager.h"
+#include "engine/component/component.h"
+#include "engine/component/component_registry.h"
+#include "engine/entity/entity_id.h"
 
 namespace Engine
 {

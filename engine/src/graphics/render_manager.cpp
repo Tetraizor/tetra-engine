@@ -1,12 +1,11 @@
-#include "render_manager.h"
+#include "engine/graphics/render_manager.h"
 
-#include "engine.h"
+#include "engine/engine.h"
 
-#include "stage/stage_manager.h"
-#include "component/component_manager.h"
+#include "engine/stage/stage_manager.h"
+#include "engine/component/component_manager.h"
 
-#include "component/transform_component.h"
-#include "component/camera_component.h"
+#include "engine/component/transform_component.h"
 
 namespace Engine::Graphics
 {

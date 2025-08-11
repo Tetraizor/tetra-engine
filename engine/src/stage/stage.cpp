@@ -1,9 +1,9 @@
-#include "stage.h"
+﻿#include "engine/stage/stage.h"
 
-#include "graphics/viewport.h"
-#include "entity/entity.h"
-#include "component/component.h"
-#include "component/component_manager.h"
+#include "engine/graphics/viewport.h"
+#include "engine/entity/entity.h"
+#include "engine/component/component.h"
+#include "engine/component/component_manager.h"
 
 #include <memory>
 

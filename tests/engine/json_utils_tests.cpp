@@ -1,8 +1,7 @@
-// tests/json_utils_test.cpp
-
 #include <gtest/gtest.h>
-#include "serialization/json/json_document.h"
-#include "serialization/json/json_value.h"
+
+#include "engine/serialization/json/json_document.h"
+#include "engine/serialization/json/json_value.h"
 
 using namespace Engine::Serialization::Json;
 

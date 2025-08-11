@@ -1,6 +1,6 @@
-#include "entity/entity.h"
-#include "entity/entity_manager.h"
-#include "component/component.h"
+﻿#include "engine/entity/entity.h"
+#include "engine/entity/entity_manager.h"
+#include "engine/component/component.h"
 
 #include <cassert>
 

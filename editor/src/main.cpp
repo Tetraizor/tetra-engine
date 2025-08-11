@@ -1,6 +1,6 @@
-#include "runtime/editor_instance.h"
+#include "editor/runtime/editor_instance.h"
 
-#include "engine.h"
+#include "engine/engine.h"
 
 #include <iostream>
 #include <memory>
