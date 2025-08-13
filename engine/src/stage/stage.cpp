@@ -38,7 +38,7 @@ namespace Engine
         viewport->end_frame();
     }
 
-    void Stage::update(float delta_time)
+    void Stage::update(const float delta_time)
     {
         entity_manager->update(delta_time);
     }

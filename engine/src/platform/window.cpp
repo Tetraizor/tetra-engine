@@ -1,7 +1,7 @@
 ﻿#include "engine/platform/window.h"
 #include <iostream>
 
-#include "engine/engine.h"
+#include "engine/debug/logging/logger.h"
 
 namespace Engine::Platform
 {

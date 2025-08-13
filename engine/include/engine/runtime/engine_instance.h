@@ -19,8 +19,19 @@ namespace Engine
 
         int run(std::vector<std::string> arguments);
 
-        float get_delta_time() { return delta_time; }
-        float get_fps() { return 1.0f / delta_time; }
+        float get_delta_time() const { return delta_time; }
+        float get_fps() const
+        {
+
+            std::stringstream stream;
+            stream << std::fixed << std::setprecision(10) << delta_time;
+            std::string s = stream.str();
+
+            Logger::log_info(std::string("get_fps: ") + s);
+
+            float result = 1.0f / delta_time;
+            return result;
+        }
 
         /// @brief Setup engine instance managers before running the engine
         /// @param project_path Path containing the "project.tetra" file

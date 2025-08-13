@@ -4,9 +4,9 @@
 #include <chrono>
 #include <filesystem>
 
-#include "engine/engine.h"
 #include "engine/stage/stage.h"
 #include "engine/debug/logging/console_sink.h"
+#include "engine/debug/logging/logger.h"
 
 namespace Engine
 {
@@ -57,7 +57,7 @@ namespace Engine
 
             delta_time = frame_time;
 
-            stage_manager.get_current_stage()->update(frame_time);
+            stage_manager.get_current_stage()->update(delta_time);
             Graphics::RenderManager::get_instance().render();
 
             // TODO: Add vsync / framerate cap / sleep?

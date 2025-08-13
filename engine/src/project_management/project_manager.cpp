@@ -4,8 +4,7 @@
 #include "engine/serialization/json/json_document.h"
 #include "engine/serialization/json/json_serialization_context.h"
 #include "engine/utils/io.h"
-
-#include "engine/engine.h"
+#include "engine/debug/logging/logger.h"
 
 #include <iostream>
 #include <filesystem>

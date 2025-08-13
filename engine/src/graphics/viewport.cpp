@@ -1,7 +1,6 @@
 ﻿#include "engine/graphics/viewport.h"
 
-#include "engine/engine.h"
-
+#include "engine/debug/logging/logger.h"
 #include <iostream>
 
 namespace Engine::Graphics
@@ -19,13 +18,17 @@ namespace Engine::Graphics
         glGenTextures(1, &color_texture);
         glBindTexture(GL_TEXTURE_2D, color_texture);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, color_texture, 0);
 
         glGenRenderbuffers(1, &depth_rbo);
-        glBindRenderbuffer(GL_RENDERBUFFER, depth_rbo);
         glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+
+        glBindRenderbuffer(GL_RENDERBUFFER, depth_rbo);
+
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, depth_rbo);
 
         // Check framebuffer completeness
@@ -43,13 +46,21 @@ namespace Engine::Graphics
     void Viewport::shutdown()
     {
         if (depth_rbo)
+        {
             glDeleteRenderbuffers(1, &depth_rbo);
-
+            depth_rbo = 0;
+        }
         if (color_texture)
+        {
             glDeleteTextures(1, &color_texture);
-
+            color_texture = 0;
+        }
         if (fbo)
+        {
             glDeleteFramebuffers(1, &fbo);
+            fbo = 0;
+        }
+        valid = false;
     }
 
     void Viewport::begin_frame()
@@ -62,6 +73,9 @@ namespace Engine::Graphics
 
     void Viewport::end_frame()
     {
+        if (!valid)
+            return;
+
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 

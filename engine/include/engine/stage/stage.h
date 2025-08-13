@@ -27,8 +27,8 @@ namespace Engine
         void setup();
         void start();
         void render();
-        void update(float delta_time);
-        void physics_update(float delta_time);
+        void update(const float delta_time);
+        void physics_update(const float delta_time);
 
         GUID get_guid() const { return guid; }
         std::string get_name() const { return name; }

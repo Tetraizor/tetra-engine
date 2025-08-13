@@ -2,6 +2,7 @@
 
 #include "engine/stage/stage_manager.h"
 #include "engine/base/singleton.h"
+#include "engine/platform/window.h"
 
 #include "engine/component/camera_component.h"
 
@@ -11,6 +12,7 @@ namespace Engine::Graphics
     {
     public:
         RenderManager();
+        ~RenderManager();
 
         void init();
         void render();
@@ -19,7 +21,12 @@ namespace Engine::Graphics
         void on_component_destroyed(std::weak_ptr<Component> component_ptr);
         void on_component_destroyed();
 
+        void present_to_window(Engine::Platform::Window *window);
+
     private:
+        size_t on_component_created_token;
+        size_t on_component_destroyed_token;
+
         StageManager &stage_manager;
         std::vector<std::weak_ptr<CameraComponent>> camera_components;
     };

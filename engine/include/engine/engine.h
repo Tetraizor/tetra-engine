@@ -1,7 +1,0 @@
-#pragma once
-
-#include "engine/debug/logging/logger.h"
-#include "engine/entity/entity.h"
-#include "engine/component/component.h"
-#include "engine/data/guid.h"
-#include "engine/base/event.h"

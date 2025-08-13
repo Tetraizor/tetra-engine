@@ -46,7 +46,7 @@ namespace Engine
         std::unordered_map<EntityID, std::unique_ptr<Entity>> *get_entity_list() { return &entity_list; }
 
         void setup();
-        void update(float delta_time);
+        void update(const float delta_time);
 
         // Serialization
         void serialize(Serialization::SerializationContext &ctx) const override;

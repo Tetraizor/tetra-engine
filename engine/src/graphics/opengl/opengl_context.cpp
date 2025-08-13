@@ -1,6 +1,6 @@
 ﻿#include "engine/graphics/opengl/opengl_context.h"
 
-#include "engine/engine.h"
+#include "engine/debug/logging/logger.h"
 
 #include <iostream>
 #include <string>

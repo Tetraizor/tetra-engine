@@ -89,7 +89,7 @@ namespace Engine
         }
     }
 
-    void EntityManager::update(float delta_time)
+    void EntityManager::update(const float delta_time)
     {
         for (auto &entity_pair : entity_list)
         {
