@@ -1,8 +1,11 @@
 #pragma once
 
-#include "engine/engine.h"
-
 #include "engine/serialization/serializable.h"
+
+#include "engine/entity/entity_id.h"
+#include "engine/data/guid.h"
+#include "engine/base/event.h"
+#include "engine/component/component.h"
 
 #include <iostream>
 #include <unordered_map>

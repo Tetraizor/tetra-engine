@@ -4,7 +4,7 @@
 #include "engine/data/guid.h"
 
 #include "engine/base/singleton.h"
-#include "engine/engine.h"
+#include "engine/debug/logging/logger.h"
 
 #include <memory>
 
