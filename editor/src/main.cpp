@@ -1,13 +1,12 @@
 #include "editor/runtime/editor_instance.h"
 
-#include "engine/engine.h"
+#include "engine/debug/logging/logger.h"
 
 #include <iostream>
 #include <memory>
 
 int main(int argc, char **argv)
 {
-
     std::vector<std::string> arguments{};
 
     for (int i = 0; i < argc; i++)
@@ -20,7 +19,7 @@ int main(int argc, char **argv)
     Logger::log_info("[Editor] Starting...");
     Logger::log_info("[Editor] Running with " + std::to_string(arguments.size()) + " arg(s).");
 
-    Editor::EditorInstance instance;
+    // Editor::EditorInstance instance;
 
     std::vector<std::string> args;
     for (int i = 0; i < arguments.size(); i++)
@@ -43,7 +42,9 @@ int main(int argc, char **argv)
 
         try
         {
+            Engine::EngineInstance &instance = Editor::EditorInstance::get_instance();
             instance.init(arguments[1]);
+
             result = instance.run(arguments);
         }
         catch (const std::exception &e)
