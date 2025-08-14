@@ -3,6 +3,8 @@
 #include <cmath>
 #include <ostream>
 
+#include <glm/glm.hpp>
+
 namespace Engine::Math
 {
     struct Vector2
@@ -51,6 +53,11 @@ namespace Engine::Math
 
         bool operator==(const Vector2 &rhs) const { return x == rhs.x && y == rhs.y; }
         bool operator!=(const Vector2 &rhs) const { return !(*this == rhs); }
+
+        explicit operator glm::vec2() const
+        {
+            return glm::vec2(x, y);
+        }
 
         float length() const { return std::sqrt(x * x + y * y); }
         float length2() const { return x * x + y * y; }

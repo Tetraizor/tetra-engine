@@ -3,6 +3,8 @@
 #include <cmath>
 #include <ostream>
 
+#include <glm/glm.hpp>
+
 namespace Engine::Math
 {
     struct Vector3
@@ -47,6 +49,11 @@ namespace Engine::Math
             y /= scalar;
             z /= scalar;
             return *this;
+        }
+
+        explicit operator glm::vec3() const
+        {
+            return glm::vec3(x, y, z);
         }
 
         bool operator==(const Vector3 &rhs) const { return x == rhs.x && y == rhs.y && z == rhs.z; }
