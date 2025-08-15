@@ -1,198 +1,180 @@
 #pragma once
+
 #include <cmath>
+#include <algorithm>
 #include <ostream>
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #include "vector3.h"
 #include "quaternion.h"
+#include "constants.h"
 
 namespace Engine::Math
 {
+    /**
+     * @brief 4x4 column-major matrix using column-vector convention (v' = M * v).
+     *
+     * Memory layout matches GLM's column-major layout: element at row r, column c
+     * is stored as m[c][r]. operator[](int) returns a pointer to a column (not a row).
+     */
     struct Matrix4
     {
         float m[4][4];
 
-        Matrix4()
-        {
-            for (int r = 0; r < 4; r++)
-                for (int c = 0; c < 4; c++)
-                    m[r][c] = (r == c) ? 1.0f : 0.0f;
-        }
+        Matrix4();
 
-        float *operator[](int row) { return m[row]; }
-        const float *operator[](int row) const { return m[row]; }
+        float *operator[](int col) { return m[col]; }
+
+        const float *operator[](int col) const { return m[col]; }
+
+        const float *data() const { return &m[0][0]; }
 
         static Matrix4 identity() { return Matrix4(); }
 
-        static Matrix4 translate(const Vector3 &t)
+        /**
+         * @brief Equality with epsilon tolerance.
+         */
+        bool equals_eps(const Matrix4 &o, float eps = EPSILON) const
         {
-            Matrix4 result = identity();
-
-            result[0][3] = t.x;
-            result[1][3] = t.y;
-            result[2][3] = t.z;
-
-            return result;
+            for (int c = 0; c < 4; ++c)
+                for (int r = 0; r < 4; ++r)
+                    if (std::abs(m[c][r] - o[c][r]) > eps)
+                        return false;
+            return true;
         }
 
-        static Matrix4 scale(const Vector3 &s)
+        /**
+         * @brief Multiply two matrices (this uses column-major / column-vector convention).
+         * @note result = A * B
+         */
+        Matrix4 operator*(const Matrix4 &rhs) const;
+
+        // === Transformations ===
+
+        /**
+         * @brief Creates a translation matrix for column-vector convention.
+         * @param t translation vector
+         * @return A Matrix4 representing the translation transformation.
+         */
+        static Matrix4 translate(const Vector3 &t);
+
+        /**
+         * @brief Creates a scaling matrix using the specified scale factors.
+         *
+         * Constructs and returns a 4x4 matrix that scales objects along the x, y, and z axes
+         * according to the components of the provided Vector3.
+         *
+         * @param s A Vector3 containing the scale factors for the x, y, and z axes.
+         * @return A Matrix4 representing the scaling transformation.
+         */
+        static Matrix4 scale(const Vector3 &s);
+
+        /**
+         * @brief Builds a rotation matrix (3x3 upper-left) from a quaternion.
+         * @param q quaternion (assumed normalized or will produce rotation accordingly)
+         * @return A Matrix4 representing the rotation transformation.
+         */
+        static Matrix4 rotate(const Quaternion &q);
+
+        /**
+         * @brief Transforms a point (x, y, z, 1). Performs perspective divide if w != 1.
+         * @param v point in object space
+         * @return transformed point (in same 3D space)
+         */
+        Vector3 transform_point(const Vector3 &v) const;
+
+        /**
+         * @brief Transforms a direction vector (w = 0). Ignores translation.
+         * @param v direction vector
+         */
+        Vector3 transform_direction(const Vector3 &v) const;
+
+        /**
+         * @brief Compose a transformation matrix from translation, rotation and scale (T * R * S).
+         * @param translation translation vector
+         * @param rotation rotation quaternion
+         * @param scale scale vector
+         */
+        static Matrix4 from_trs(const Vector3 &translation, const Quaternion &rotation, const Vector3 &scaling);
+
+        /**
+         * @brief Decomposes the matrix into translation, rotation (quaternion) and scale.
+         *
+         * @param out_translation receives translation
+         * @param out_rotation receives rotation (as Quaternion)
+         * @param out_scale receives scale
+         *
+         * @note This assumes the matrix is composed as T * R * S (no shear). Negative scale / reflection are not fully handled.
+         */
+        void decompose(Vector3 &out_translation, Quaternion &out_rotation, Vector3 &out_scale) const;
+
+        // === View Operations ===
+
+        /**
+         * @brief Creates a perspective projection matrix (OpenGL style, right-handed).
+         * @param fov_radians vertical field of view (radians)
+         * @param aspect aspect ratio (width / height)
+         * @param z_near near plane (positive)
+         * @param z_far far plane (positive)
+         */
+        static Matrix4 perspective(float fov_radians, float aspect, float z_near, float z_far);
+
+        /**
+         * @brief Creates an orthographic projection matrix.
+         * @param left,right,bottom,top define the view volume
+         * @param znear,zfar near and far planes
+         */
+        static Matrix4 orthographic(float left, float right, float bottom, float top, float z_near, float z_far);
+
+        /**
+         * @brief Builds a lookAt view matrix (camera) matching GLM::lookAt (column-major).
+         * @param eye camera position
+         * @param center target point
+         * @param up world up vector
+         */
+        static Matrix4 look_at(const Vector3 &eye, const Vector3 &center, const Vector3 &up);
+
+        // === Matrix Operations ===
+
+        /**
+         * @brief Fast inverse assuming an affine TRS matrix with bottom row (0,0,0,1).
+         * @note If the matrix contains projection or non-affine terms, use a full inverse routine.
+         */
+        Matrix4 inverse_affine() const;
+
+        Matrix4 transpose() const;
+
+        // === Type Conversions ===
+
+        /**
+         * @brief Converts to glm::mat4 with matching column-major layout.
+         */
+        glm::mat4 to_glm() const;
+
+        /**
+         * @brief Create Matrix4 from glm::mat4
+         */
+        static Matrix4 from_glm(const glm::mat4 &g);
+
+        /**
+         * @brief Create a matrix from a quaternion (convenience wrapper).
+         */
+        static Matrix4 from_quaternion(const Quaternion &q)
         {
-            Matrix4 result;
-
-            result[0][0] = s.x;
-            result[1][1] = s.y;
-            result[2][2] = s.z;
-
-            return result;
-        }
-
-        static Matrix4 rotate(const Quaternion &q)
-        {
-            Matrix4 result = identity();
-
-            float xx = q.x * q.x;
-            float yy = q.y * q.y;
-            float zz = q.z * q.z;
-            float xy = q.x * q.y;
-            float xz = q.x * q.z;
-            float yz = q.y * q.z;
-            float wx = q.w * q.x;
-            float wy = q.w * q.y;
-            float wz = q.w * q.z;
-
-            result[0][0] = 1.0f - 2.0f * (yy + zz);
-            result[0][1] = 2.0f * (xy + wz);
-            result[0][2] = 2.0f * (xz - wy);
-
-            result[1][0] = 2.0f * (xy - wz);
-            result[1][1] = 1.0f - 2.0f * (xx + zz);
-            result[1][2] = 2.0f * (yz + wx);
-
-            result[2][0] = 2.0f * (xz + wy);
-            result[2][1] = 2.0f * (yz - wx);
-            result[2][2] = 1.0f - 2.0f * (xx + yy);
-
-            return result;
-        }
-
-        Matrix4 operator*(const Matrix4 &rhs) const
-        {
-            Matrix4 result;
-            for (int r = 0; r < 4; r++)
-            {
-                for (int c = 0; c < 4; c++)
-                {
-                    result[r][c] = m[r][0] * rhs[0][c] +
-                                   m[r][1] * rhs[1][c] +
-                                   m[r][2] * rhs[2][c] +
-                                   m[r][3] * rhs[3][c];
-                }
-            }
-            return result;
-        }
-
-        Vector3 operator*(const Vector3 &v) const
-        {
-            float x = m[0][0] * v.x + m[0][1] * v.y + m[0][2] * v.z + m[0][3];
-            float y = m[1][0] * v.x + m[1][1] * v.y + m[1][2] * v.z + m[1][3];
-            float z = m[2][0] * v.x + m[2][1] * v.y + m[2][2] * v.z + m[2][3];
-            return Vector3(x, y, z);
-        }
-
-        static Matrix4 perspective(float fov_radians, float aspect, float near, float far)
-        {
-            Matrix4 result;
-            float tanHalfFov = std::tan(fov_radians / 2.0f);
-
-            for (int r = 0; r < 4; r++)
-                for (int c = 0; c < 4; c++)
-                    result[r][c] = 0.0f;
-
-            result[0][0] = 1.0f / (aspect * tanHalfFov);
-            result[1][1] = 1.0f / tanHalfFov;
-            result[2][2] = -(far + near) / (far - near);
-            result[2][3] = -(2.0f * far * near) / (far - near);
-            result[3][2] = -1.0f;
-
-            return result;
-        }
-
-        static Matrix4 look_at(const Vector3 &eye, const Vector3 &center, const Vector3 &up)
-        {
-            Vector3 f = normalize(center - eye);
-            Vector3 s = normalize(cross(f, up));
-            Vector3 u = cross(s, f);
-
-            Matrix4 result = identity();
-            result[0][0] = s.x;
-            result[0][1] = s.y;
-            result[0][2] = s.z;
-
-            result[1][0] = u.x;
-            result[1][1] = u.y;
-            result[1][2] = u.z;
-
-            result[2][0] = -f.x;
-            result[2][1] = -f.y;
-            result[2][2] = -f.z;
-
-            result[0][3] = -dot(s, eye);
-            result[1][3] = -dot(u, eye);
-            result[2][3] = dot(f, eye);
-
-            return result;
-        }
-
-        static Matrix4 from_quaternion(Quaternion q)
-        {
-            Matrix4 result;
-
-            float x = q.x;
-            float y = q.y;
-            float z = q.z;
-            float w = q.w;
-
-            float xx = x * x;
-            float yy = y * y;
-            float zz = z * z;
-            float xy = x * y;
-            float xz = x * z;
-            float yz = y * z;
-            float wx = w * x;
-            float wy = w * y;
-            float wz = w * z;
-
-            result[0][0] = 1.0f - 2.0f * (yy + zz);
-            result[0][1] = 2.0f * (xy + wz);
-            result[0][2] = 2.0f * (xz - wy);
-            result[0][3] = 0.0f;
-
-            result[1][0] = 2.0f * (xy - wz);
-            result[1][1] = 1.0f - 2.0f * (xx + zz);
-            result[1][2] = 2.0f * (yz + wx);
-            result[1][3] = 0.0f;
-
-            result[2][0] = 2.0f * (xz + wy);
-            result[2][1] = 2.0f * (yz - wx);
-            result[2][2] = 1.0f - 2.0f * (xx + yy);
-            result[2][3] = 0.0f;
-
-            result[3][0] = 0.0f;
-            result[3][1] = 0.0f;
-            result[3][2] = 0.0f;
-            result[3][3] = 1.0f;
-
-            return result;
+            return rotate(q);
         }
     };
 
     inline std::ostream &operator<<(std::ostream &os, const Matrix4 &mat)
     {
-        for (int r = 0; r < 4; r++)
+        for (int r = 0; r < 4; ++r)
         {
             os << "| ";
-            for (int c = 0; c < 4; c++)
-            {
-                os << mat[r][c] << " ";
-            }
+            for (int c = 0; c < 4; ++c)
+                os << mat.m[c][r] << " ";
             os << "|\n";
         }
         return os;

@@ -63,6 +63,15 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(SDL3)
 
+# glm
+message("Fetching glm...")
+FetchContent_Declare(
+    glm
+    GIT_REPOSITORY https://github.com/g-truc/glm.git
+    GIT_TAG 1.0.1 # use the latest stable release
+)
+FetchContent_MakeAvailable(glm)
+
 message("Completed fetching external libraries")
 
 # --- SUBPROJECTS ---

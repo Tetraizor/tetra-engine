@@ -1,110 +1,57 @@
 #pragma once
+
 #include <cmath>
 #include <ostream>
+
+#include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
+
 #include "vector3.h"
+#include "constants.h"
 
 namespace Engine::Math
 {
+    struct Matrix4;
+
     struct Quaternion
     {
         float x, y, z, w;
 
-        Quaternion() : x(0), y(0), z(0), w(1) {}
-        Quaternion(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
+        Quaternion();
+        Quaternion(float x, float y, float z, float w);
 
-        static Quaternion identity() { return Quaternion(0, 0, 0, 1); }
+        float length_squared() const;
+        float length() const;
+        bool is_normalized() const;
 
-        static Quaternion from_axis_angle(const Vector3 &axis, float radians)
-        {
-            float half_angle = radians * 0.5f;
-            float s = std::sin(half_angle);
+        static Quaternion identity();
 
-            return Quaternion(axis.x * s, axis.y * s, axis.z * s, std::cos(half_angle));
-        }
+        Quaternion normalized() const;
+        Quaternion conjugate() const;
+        Quaternion inverse() const;
 
-        static Quaternion from_euler(float pitch, float yaw, float roll)
-        {
-            float cy = std::cos(yaw * 0.5f);
-            float sy = std::sin(yaw * 0.5f);
-            float cp = std::cos(pitch * 0.5f);
-            float sp = std::sin(pitch * 0.5f);
-            float cr = std::cos(roll * 0.5f);
-            float sr = std::sin(roll * 0.5f);
+        Quaternion operator*(const Quaternion &q) const;
 
-            return Quaternion(
-                sr * cp * cy - cr * sp * sy, // x
-                cr * sp * cy + sr * cp * sy, // y
-                cr * cp * sy - sr * sp * cy, // z
-                cr * cp * cy + sr * sp * sy  // w
-            );
-        }
+        Vector3 operator*(const Vector3 &v) const;
 
-        Quaternion normalized() const
-        {
-            float len = std::sqrt(x * x + y * y + z * z + w * w);
-            if (len > 0.0f)
-            {
-                float inv = 1.0f / len;
-                return Quaternion(x * inv, y * inv, z * inv, w * inv);
-            }
-            return Quaternion();
-        }
+        static Quaternion slerp(const Quaternion &a, const Quaternion &b, float t);
 
-        Quaternion conjugate() const
-        {
-            return Quaternion(-x, -y, -z, w);
-        }
+        static Quaternion from_euler(const Vector3 &euler_radians);
+        static Quaternion from_euler(float pitch, float yaw, float roll);
 
-        Quaternion inverse() const
-        {
-            float len2 = x * x + y * y + z * z + w * w;
-            if (len2 > 0.0f)
-            {
-                float inv = 1.0f / len2;
-                return Quaternion(-x * inv, -y * inv, -z * inv, w * inv);
-            }
-            return Quaternion();
-        }
+        Vector3 to_euler() const;
 
-        Quaternion operator*(const Quaternion &q) const
-        {
-            return Quaternion(
-                w * q.x + x * q.w + y * q.z - z * q.y,
-                w * q.y - x * q.z + y * q.w + z * q.x,
-                w * q.z + x * q.y - y * q.x + z * q.w,
-                w * q.w - x * q.x - y * q.y - z * q.z);
-        }
+        static Quaternion from_axis_angle(const Vector3 &axis, float radians);
+        void to_axis_angle(Vector3 &axis, float &angle) const;
 
-        Vector3 operator*(const Vector3 &v) const
-        {
-            Vector3 u(x, y, z);
-            float s = w;
+        Matrix4 to_mat4() const;
 
-            Vector3 uv = cross(u, v);
-            Vector3 uuv = cross(u, uv);
-
-            uv *= (2.0f * s);
-            uuv *= 2.0f;
-
-            return v + uv + uuv;
-        }
-
-        explicit operator glm::quat() const { return glm::quat(w, x, y, z); }
-        glm::quat to_glm() const { return glm::quat(w, x, y, z); }
+        explicit operator glm::quat() const;
+        glm::quat to_glm() const;
     };
 
-    inline float dot(const Quaternion &a, const Quaternion &b)
-    {
-        return a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
-    }
+    float dot(const Quaternion &a, const Quaternion &b);
+    Quaternion normalize(const Quaternion &q);
 
-    inline Quaternion normalize(const Quaternion &q)
-    {
-        return q.normalized();
-    }
-
-    inline std::ostream &operator<<(std::ostream &os, const Quaternion &q)
-    {
-        return os << "(" << q.x << ", " << q.y << ", " << q.z << ", " << q.w << ")";
-    }
+    std::ostream &operator<<(std::ostream &os, const Quaternion &q);
 }

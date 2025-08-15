@@ -37,6 +37,7 @@ find_package(OpenGL REQUIRED)
 target_link_libraries(TetraEngine
     PUBLIC SDL3::SDL3
     PUBLIC nlohmann_json::nlohmann_json
+    PUBLIC glm
     PUBLIC glad
     PUBLIC OpenGL::GL
 )
