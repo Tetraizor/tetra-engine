@@ -4,7 +4,7 @@
 #include "engine/base/singleton.h"
 #include "engine/platform/window.h"
 
-#include "engine/component/camera_component.h"
+#include "engine/component/3d/camera_3d.h"
 
 namespace Engine::Graphics
 {
@@ -28,6 +28,6 @@ namespace Engine::Graphics
         size_t on_component_destroyed_token;
 
         StageManager &stage_manager;
-        std::vector<std::weak_ptr<CameraComponent>> camera_components;
+        std::vector<std::weak_ptr<Camera3DComponent>> camera_components;
     };
 }

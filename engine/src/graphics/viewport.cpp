@@ -63,6 +63,27 @@ namespace Engine::Graphics
         valid = false;
     }
 
+    void Viewport::resize(int width, int height)
+    {
+        if (this->width == width && this->height == height)
+            return;
+
+        this->width = width;
+        this->height = height;
+
+        if (!valid)
+            return;
+
+        glBindTexture(GL_TEXTURE_2D, color_texture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+
+        glBindRenderbuffer(GL_RENDERBUFFER, depth_rbo);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glBindRenderbuffer(GL_RENDERBUFFER, 0);
+    }
+
     void Viewport::begin_frame()
     {
         glBindFramebuffer(GL_FRAMEBUFFER, fbo);

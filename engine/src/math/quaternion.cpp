@@ -1,5 +1,5 @@
-#include "quaternion.h"
-#include "matrix4.h" // required here so to_mat4 can be defined
+#include "engine/math/quaternion.h"
+#include "engine/math/matrix4.h"
 
 #include <algorithm>
 
@@ -47,18 +47,39 @@ namespace Engine::Math
             w * q.w - x * q.x - y * q.y - z * q.z);
     }
 
+    bool Quaternion::operator==(const Quaternion &other) const
+    {
+        auto cmp = [&](float a, float b)
+        {
+            return std::fabs(a - b) <= EPSILON;
+        };
+
+        bool same =
+            cmp(x, other.x) &&
+            cmp(y, other.y) &&
+            cmp(z, other.z) &&
+            cmp(w, other.w);
+
+        bool negated =
+            cmp(x, -other.x) &&
+            cmp(y, -other.y) &&
+            cmp(z, -other.z) &&
+            cmp(w, -other.w);
+
+        return same || negated;
+    }
+
+    bool Quaternion::operator!=(const Quaternion &rhs) const
+    {
+        return !(*this == rhs);
+    }
+
     Vector3 Quaternion::operator*(const Vector3 &v) const
     {
-        Vector3 u(x, y, z);
-        float s = w;
+        Quaternion qv(v.x, v.y, v.z, 0);
+        Quaternion res = (*this) * qv * this->inverse();
 
-        Vector3 uv = cross(u, v);
-        Vector3 uuv = cross(u, uv);
-
-        uv *= (2.0f * s);
-        uuv *= 2.0f;
-
-        return v + uv + uuv;
+        return Vector3(res.x, res.y, res.z);
     }
 
     Quaternion Quaternion::slerp(const Quaternion &a, const Quaternion &b, float t)

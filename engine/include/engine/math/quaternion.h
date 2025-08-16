@@ -34,6 +34,9 @@ namespace Engine::Math
 
         Vector3 operator*(const Vector3 &v) const;
 
+        bool operator==(const Quaternion &rhs) const;
+        bool operator!=(const Quaternion &rhs) const;
+
         static Quaternion slerp(const Quaternion &a, const Quaternion &b, float t);
 
         static Quaternion from_euler(const Vector3 &euler_radians);
