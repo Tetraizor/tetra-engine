@@ -11,6 +11,8 @@ FetchContent_MakeAvailable(googletest)
 file(GLOB_RECURSE TEST_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/engine/*.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/editor/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/engine/**/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/editor/**/*.cpp
 )
 
 add_executable(run_tests ${TEST_SOURCES})

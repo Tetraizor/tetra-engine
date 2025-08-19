@@ -1,5 +1,5 @@
-#include "quaternion.h"
-#include "matrix4.h" // required here so to_mat4 can be defined
+#include "engine/math/quaternion.h"
+#include "engine/math/matrix4.h"
 
 #include <algorithm>
 
@@ -47,18 +47,39 @@ namespace Engine::Math
             w * q.w - x * q.x - y * q.y - z * q.z);
     }
 
+    bool Quaternion::operator==(const Quaternion &other) const
+    {
+        auto cmp = [&](float a, float b)
+        {
+            return std::fabs(a - b) <= EPSILON;
+        };
+
+        bool same =
+            cmp(x, other.x) &&
+            cmp(y, other.y) &&
+            cmp(z, other.z) &&
+            cmp(w, other.w);
+
+        bool negated =
+            cmp(x, -other.x) &&
+            cmp(y, -other.y) &&
+            cmp(z, -other.z) &&
+            cmp(w, -other.w);
+
+        return same || negated;
+    }
+
+    bool Quaternion::operator!=(const Quaternion &rhs) const
+    {
+        return !(*this == rhs);
+    }
+
     Vector3 Quaternion::operator*(const Vector3 &v) const
     {
-        Vector3 u(x, y, z);
-        float s = w;
+        Quaternion qv(v.x, v.y, v.z, 0);
+        Quaternion res = (*this) * qv * this->inverse();
 
-        Vector3 uv = cross(u, v);
-        Vector3 uuv = cross(u, uv);
-
-        uv *= (2.0f * s);
-        uuv *= 2.0f;
-
-        return v + uv + uuv;
+        return Vector3(res.x, res.y, res.z);
     }
 
     Quaternion Quaternion::slerp(const Quaternion &a, const Quaternion &b, float t)
@@ -119,19 +140,21 @@ namespace Engine::Math
 
     Quaternion Quaternion::from_euler(float pitch, float yaw, float roll)
     {
-        float cy = std::cos(yaw * 0.5f);
-        float sy = std::sin(yaw * 0.5f);
-        float cp = std::cos(pitch * 0.5f);
-        float sp = std::sin(pitch * 0.5f);
-        float cr = std::cos(roll * 0.5f);
-        float sr = std::sin(roll * 0.5f);
+        // half angles
+        float hx = pitch * 0.5f;
+        float hy = yaw * 0.5f;
+        float hz = roll * 0.5f;
 
-        return Quaternion(
-            sr * cp * cy - cr * sp * sy, // x
-            cr * sp * cy + sr * cp * sy, // y
-            cr * cp * sy - sr * sp * cy, // z
-            cr * cp * cy + sr * sp * sy  // w
-        );
+        float cx = cos(hx), sx = sin(hx);
+        float cy = cos(hy), sy = sin(hy);
+        float cz = cos(hz), sz = sin(hz);
+
+        Quaternion q;
+        q.w = cx * cy * cz + sx * sy * sz;
+        q.x = sx * cy * cz - cx * sy * sz;
+        q.y = cx * sy * cz + sx * cy * sz;
+        q.z = cx * cy * sz - sx * sy * cz;
+        return q;
     }
 
     Vector3 Quaternion::to_euler() const
