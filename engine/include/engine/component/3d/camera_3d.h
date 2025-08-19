@@ -14,7 +14,7 @@ namespace Engine
 {
     using namespace Math;
 
-    class Camera3DComponent : public Component
+    class Camera3D : public Component
     {
 
     public:
@@ -26,12 +26,12 @@ namespace Engine
 
         Graphics::Viewport *get_viewport() { return viewport.get(); }
 
-        void serialize(Serialization::SerializationContext &ctx) const override { Component::serialize(ctx); }
-        void deserialize(Serialization::SerializationContext &ctx) override { Component::serialize(ctx); }
-
         float get_fov_degrees() { return fov_degrees; }
         float get_near_plane() { return near_plane; }
         float get_far_plane() { return far_plane; }
+
+        void deserialize(Serialization::SerializationContext &ctx) override { Component::serialize(ctx); }
+        void serialize(Serialization::SerializationContext &ctx) const override { Component::serialize(ctx); }
 
     private:
         float fov_degrees = 60.0f;
@@ -44,4 +44,4 @@ namespace Engine
     };
 }
 
-REGISTER_COMPONENT(Camera3DComponent, Engine::Camera3DComponent)
+REGISTER_COMPONENT(Camera3D, Engine::Camera3D)

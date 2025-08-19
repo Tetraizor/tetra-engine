@@ -32,6 +32,7 @@ namespace Engine
             float result = 1.0f / delta_time;
             return result;
         }
+        float get_time_passed() const { return time_passed; };
 
         /// @brief Setup engine instance managers before running the engine
         /// @param project_path Path containing the "project.tetra" file
@@ -39,5 +40,6 @@ namespace Engine
 
     protected:
         float delta_time;
+        float time_passed;
     };
 }

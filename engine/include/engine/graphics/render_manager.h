@@ -28,6 +28,6 @@ namespace Engine::Graphics
         size_t on_component_destroyed_token;
 
         StageManager &stage_manager;
-        std::vector<std::weak_ptr<Camera3DComponent>> camera_components;
+        std::vector<std::weak_ptr<Camera3D>> camera_components;
     };
 }

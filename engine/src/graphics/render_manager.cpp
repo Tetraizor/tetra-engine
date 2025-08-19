@@ -24,7 +24,7 @@ namespace Engine::Graphics
 
         ComponentManager &component_manager = stage_ptr->get_component_manager();
 
-        camera_components = component_manager.get_components_by_type<Camera3DComponent>();
+        camera_components = component_manager.get_components_by_type<Camera3D>();
 
         on_component_created_token = component_manager.component_created.subscribe(this, &RenderManager::on_component_created);
         on_component_destroyed_token = component_manager.component_destroyed.subscribe(this, &RenderManager::on_component_destroyed);
@@ -38,7 +38,7 @@ namespace Engine::Graphics
         auto component_shared_ptr = component_ptr.lock();
         assert(component_shared_ptr);
 
-        std::shared_ptr<Camera3DComponent> camera = std::dynamic_pointer_cast<Camera3DComponent>(component_shared_ptr);
+        std::shared_ptr<Camera3D> camera = std::dynamic_pointer_cast<Camera3D>(component_shared_ptr);
         if (camera)
             camera_components.push_back(camera);
     }
@@ -46,7 +46,7 @@ namespace Engine::Graphics
     void RenderManager::on_component_destroyed(std::weak_ptr<Component> component_ptr)
     {
         ComponentManager &component_manager = stage_manager.get_current_stage()->get_component_manager();
-        camera_components = component_manager.get_components_by_type<Camera3DComponent>();
+        camera_components = component_manager.get_components_by_type<Camera3D>();
     }
 
     void RenderManager::render()
@@ -55,8 +55,7 @@ namespace Engine::Graphics
         {
             assert(!camera_component_weak.expired());
 
-            std::shared_ptr<Camera3DComponent> camera_component_ptr = camera_component_weak.lock();
-
+            std::shared_ptr<Camera3D> camera_component_ptr = camera_component_weak.lock();
             camera_component_ptr->render();
         }
     }
@@ -69,7 +68,7 @@ namespace Engine::Graphics
         if (camera_components.empty())
             return;
 
-        std::shared_ptr<Camera3DComponent> primary;
+        std::shared_ptr<Camera3D> primary;
         for (auto &wp : camera_components)
         {
             primary = wp.lock();

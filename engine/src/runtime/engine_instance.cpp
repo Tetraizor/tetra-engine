@@ -56,6 +56,7 @@ namespace Engine
             }
 
             delta_time = frame_time;
+            time_passed += delta_time;
 
             stage_manager.get_current_stage()->update(delta_time);
             Graphics::RenderManager::get_instance().render();
