@@ -44,6 +44,8 @@ namespace Engine
             ctx.end_object();
         }
 
+        const Entity *get_entity() const { return entity; }
+
     protected:
         ComponentID id;
         const Entity *entity = nullptr;

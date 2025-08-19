@@ -1,8 +1,5 @@
 ﻿#include "engine/stage/stage_manager.h"
 
-#include "engine/entity/entity.h"
-#include "engine/component/transform_component.h"
-
 namespace Engine
 {
     std::unique_ptr<Stage> StageManager::create_empty_stage()

@@ -1,8 +1,12 @@
 #pragma once
 
+#include <memory>
+
+#include "engine/component/component.h"
 #include "engine/entity/entity_manager.h"
 #include "engine/entity/entity.h"
 #include "engine/component/component_registry.h"
+#include "engine/stage/stage_manager.h"
 
 namespace Engine
 {

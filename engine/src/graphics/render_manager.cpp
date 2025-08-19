@@ -3,7 +3,7 @@
 #include "engine/stage/stage_manager.h"
 #include "engine/component/component_manager.h"
 
-#include "engine/component/transform_component.h"
+#include "engine/component/3d/transform_3d.h"
 
 namespace Engine::Graphics
 {
@@ -24,13 +24,13 @@ namespace Engine::Graphics
 
         ComponentManager &component_manager = stage_ptr->get_component_manager();
 
-        camera_components = component_manager.get_components_by_type<CameraComponent>();
+        camera_components = component_manager.get_components_by_type<Camera3DComponent>();
 
         on_component_created_token = component_manager.component_created.subscribe(this, &RenderManager::on_component_created);
         on_component_destroyed_token = component_manager.component_destroyed.subscribe(this, &RenderManager::on_component_destroyed);
 
         Entity *test = stage_ptr->get_entity_manager().create_entity("Test");
-        test->add_component<TransformComponent>();
+        test->add_component<Transform3D>();
     }
 
     void RenderManager::on_component_created(std::weak_ptr<Component> component_ptr)
@@ -38,7 +38,7 @@ namespace Engine::Graphics
         auto component_shared_ptr = component_ptr.lock();
         assert(component_shared_ptr);
 
-        std::shared_ptr<CameraComponent> camera = std::dynamic_pointer_cast<CameraComponent>(component_shared_ptr);
+        std::shared_ptr<Camera3DComponent> camera = std::dynamic_pointer_cast<Camera3DComponent>(component_shared_ptr);
         if (camera)
             camera_components.push_back(camera);
     }
@@ -46,7 +46,7 @@ namespace Engine::Graphics
     void RenderManager::on_component_destroyed(std::weak_ptr<Component> component_ptr)
     {
         ComponentManager &component_manager = stage_manager.get_current_stage()->get_component_manager();
-        camera_components = component_manager.get_components_by_type<CameraComponent>();
+        camera_components = component_manager.get_components_by_type<Camera3DComponent>();
     }
 
     void RenderManager::render()
@@ -55,7 +55,7 @@ namespace Engine::Graphics
         {
             assert(!camera_component_weak.expired());
 
-            std::shared_ptr<CameraComponent> camera_component_ptr = camera_component_weak.lock();
+            std::shared_ptr<Camera3DComponent> camera_component_ptr = camera_component_weak.lock();
 
             camera_component_ptr->render();
         }
@@ -69,7 +69,7 @@ namespace Engine::Graphics
         if (camera_components.empty())
             return;
 
-        std::shared_ptr<CameraComponent> primary;
+        std::shared_ptr<Camera3DComponent> primary;
         for (auto &wp : camera_components)
         {
             primary = wp.lock();
@@ -81,5 +81,24 @@ namespace Engine::Graphics
             return;
 
         auto vp = primary->get_viewport();
+        if (!vp || !vp->is_valid())
+            return;
+
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, vp->get_fbo());
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+
+        int srcW = vp->get_width();
+        int srcH = vp->get_height();
+        int dstW = window->get_width();
+        int dstH = window->get_height();
+
+        glBlitFramebuffer(
+            0, 0, srcW, srcH,
+            0, 0, dstW, dstH,
+            GL_COLOR_BUFFER_BIT, GL_LINEAR);
+
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+
+        window->swap_buffers();
     }
 }
